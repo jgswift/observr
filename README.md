@@ -13,7 +13,7 @@ php composer.phar require jgswift/observr:dev-master
 
 ## Usage
 
-observr is a lightweight php tool which implements a loose observer pattern using traits
+observr is a lightweight php trait that loosely implements the observer pattern
 
 The following is a minimal example
 ```php
