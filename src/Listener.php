@@ -1,27 +1,27 @@
 <?php
 namespace observr {
-    use kindentfy;
+    use qtil;
     class Listener {
         /**
-         * array of subjects keyed by kindentifier
+         * array of subjects keyed by qtil identifier
          * @var array 
          */
         public static $subjects = [];
         
         /**
-         * multidimensional array of closures dilineated by kindentifier and event name
+         * multidimensional array of closures dilineated by qtil identifier and event name
          * @var array 
          */
         public static $observers = [];
         
         /**
-         * array of states keyed by kindentifier
+         * array of states keyed by qtil identifier
          * @var array 
          */
         public static $state = [];
         
         /**
-         * array of kindentifiers
+         * array of qtil identifiers ids
          * @var array 
          */
         public static $ids = [];
@@ -79,7 +79,7 @@ namespace observr {
          * @return string
          */
         private static function subject($object, &$new = false) {
-            $id = kindentfy\Identifier::identify($object);
+            $id = qtil\Identifier::identify($object);
 
             if(in_array($id,self::$ids)) {
                 self::$subjects[$id] = $object;
@@ -227,7 +227,7 @@ namespace observr {
          * @return string
          */
         static function getState($object) {
-            $id = kindentfy\Identifier::identify($object);
+            $id = qtil\Identifier::identify($object);
 
             if( empty( self::$state[$id] )) {
                 return;
@@ -244,7 +244,7 @@ namespace observr {
          * @return mixed
          */
         static function state($object,$newstate=null,$eventArgs=null) {
-            $id = kindentfy\Identifier::identify($object);
+            $id = qtil\Identifier::identify($object);
 
             if(empty(self::$observers[$id])) {
                 return;
@@ -264,7 +264,7 @@ namespace observr {
          * @return null
          */
         static function unwatch($object, $state) {
-            $id = kindentfy\Identifier::identify($object);
+            $id = qtil\Identifier::identify($object);
 
             if(empty(self::$observers[$id])) {
                 return;
