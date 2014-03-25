@@ -1,6 +1,6 @@
 observr
 ====
-PHP 5.4+ observer pattern using traits
+PHP 5.5+ observer pattern using traits
 
 [![Build Status](https://travis-ci.org/jgswift/observr.png?branch=master)](https://travis-ci.org/jgswift/observr)
 
