@@ -57,11 +57,11 @@ namespace observr {
                 
                 $this->setState('exists', $e);
                 if($e->canceled) {
-                    return;
+                    return false;
                 }
             }
             
-            parent::offsetExists($offset);
+            return parent::offsetExists($offset);
         }
         
         /**
