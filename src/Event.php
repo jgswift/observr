@@ -29,6 +29,7 @@ namespace observr {
          * @param array $arguments
          */
         function __construct($sender,$arguments = []) {
+            
             $this->sender = $sender;
 
             $nArgs = func_num_args();
@@ -37,11 +38,7 @@ namespace observr {
                 array_shift( $arguments );
             }
 
-            if(!empty($arguments)) {
-                foreach($arguments as $k => $v) {
-                    $this->$k = $v;
-                }
-            }
+            parent::__construct($arguments);
         }
 
         /**
@@ -74,8 +71,9 @@ namespace observr {
          * @return boolean
          */
         function cancel($e = null) {
-            if(is_callable($e))
+            if(is_callable($e)) {
                 return $this->canceled = $e();
+            }
 
             $this->canceled = true;
             return false;
