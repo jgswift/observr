@@ -75,6 +75,11 @@ namespace observr {
          * @return mixed
          */
         public function setState($state,$e=null)  {
+            if(func_num_args() > 2) {
+                $args = func_get_args();
+                array_shift($args);
+                $e = $args;
+            }
             return Listener::state($this,$state,$e);
         }
 

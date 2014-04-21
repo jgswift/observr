@@ -132,7 +132,6 @@ namespace observr {
          */
         protected static function notify($object, $state, $e = null) {
             $id = self::subject($object);
-            
 
             if(empty(self::$observers[$id])) {
                 return;
@@ -149,23 +148,23 @@ namespace observr {
                 $observers = self::$observers[$id][$state]; 
 
                 self::$observers[$id][$state] = null; // PREVENTS RECURSION
-
-                if($e instanceof Event) {
-                    $args = [$e->sender];
-                } else {
-                    $args = [$object];   
-                }
                 
-                if(!is_null($e)) {
-                    $args[] = $e;
+                if(is_null($e)) {
+                    $args = [$object];
+                } elseif($e instanceof Event) {
+                    $args = [$e->sender,$e];
+                } elseif(qtil\ArrayUtil::isIterable($e)) {
+                    $args = (array)$e;
+                } else {
+                    $args = [$e];
                 }
-
+  
                 foreach($observers as $observer) {
                     if($observer instanceof \Closure) {
-                        @$observer->bindTo( $object );
+                        $observer->bindTo($object,$object);
                     }
-
-                    $result[] = call_user_func_array( $observer, $args);
+                    
+                    $result[] = call_user_func_array($observer, $args);
                 }
 
                 if($e instanceof Event) {
@@ -182,10 +181,6 @@ namespace observr {
                 }
 
                 self::$observers[$id][$state] = $observers;
-            }
-            
-            if(count($result) === 1) {
-                return $result[0];
             }
             
             return $result;

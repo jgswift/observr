@@ -50,16 +50,24 @@ namespace observr\Tests {
             $this->assertEquals(1,$c);
         }
         
-        function testStateChangeReturnValue() {
+        /**
+         * When multiple observers present and results are needed(rarely) then 
+         * emitter will result in an array containing all of the aggregate results
+         */
+        function testMultipleStateChangeReturnValue() {
             $user = new Mock\User;
             
             $user->attach('login',function() {
                 return 1;
             });
             
+            $user->attach('login',function() {
+                return 2;
+            });
+            
             $c = $user->setState('login');
             
-            $this->assertEquals(1,$c);
+            $this->assertEquals([1,2],$c);
         }
         
         function testEventCancel() {
@@ -75,6 +83,35 @@ namespace observr\Tests {
             $user->setState('login',$e);
             
             $this->assertEquals(true,$e->canceled);
+        }
+        
+        function testUnwatchAll() {
+            $user = new Mock\User;
+            
+            $c = 0;
+            $user->attach('login',function($s,$e)use(&$c) {
+                $c++;
+            });
+            
+            // clears out all observers so c will remain 0
+            $user->clearState('login');
+            
+            $user->setState('login');
+            
+            $this->assertEquals(0,$c);
+        }
+        
+        function testEventArrayArg() {
+            $user = new Mock\User;
+            
+            $user->attach('login',function($token) {
+                return $token;
+            });
+            
+            // uses array as argument
+            $token = $user->setState('login',['hello']);
+            
+            $this->assertEquals(['hello'],$token);
         }
     }
 }
