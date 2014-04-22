@@ -130,7 +130,7 @@ namespace observr {
          * @param mixed $e
          * @return array
          */
-        protected static function notify($object, $state, $e = null) {
+        protected static function notify($object, $state, $e=null) {
             $id = self::subject($object);
 
             if(empty(self::$observers[$id])) {
@@ -147,7 +147,7 @@ namespace observr {
             if (!empty(self::$observers[$id][$state]))  {
                 $observers = self::$observers[$id][$state]; 
                 self::$observers[$id][$state] = null; // PREVENTS RECURSION
-                $result = self::trigger($object,$observers,$state,$e);
+                $result = self::trigger($object,$observers,$e);
                 self::$observers[$id][$state] = $observers;
             } 
             
@@ -162,16 +162,16 @@ namespace observr {
          * @param mixed $e
          * @return array
          */
-        protected static function trigger($object, array $observers, $state, $e=null) {
+        protected static function trigger($object, array $observers, $e=null) {
             $result = [];
-            if(is_null($e)) {
-                $args = [$object];
-            } elseif($e instanceof Event) {
+            if($e instanceof Event) {
                 $args = [$e->sender,$e];
             } elseif(qtil\ArrayUtil::isIterable($e)) {
                 $args = (array)$e;
-            } else {
+            } elseif(!is_null($e)) {
                 $args = [$e];
+            } else {
+                $args = [$object];
             }
 
             foreach($observers as $observer) {
