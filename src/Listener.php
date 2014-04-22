@@ -28,7 +28,7 @@ namespace observr {
 
         /**
          * check if object event is being watched
-         * @param mixed $subject
+         * @param Subject $subject
          * @param string $name
          * @return boolean
          */
@@ -41,7 +41,7 @@ namespace observr {
 
         /**
          * adds a closure to event listing
-         * @param mixed $subject
+         * @param Subject $subject
          * @param string $name
          * @param callable $observer
          */
@@ -54,7 +54,7 @@ namespace observr {
         /**
          * removes a closure from event listing
          * closure itself may be provided to remove only that specific callback
-         * @param mixed $subject
+         * @param Subject $subject
          * @param string $name
          * @param callable $observer
          */
@@ -98,7 +98,7 @@ namespace observr {
 
         /**
          * like hasObserver but accepts array of states to check for watchers
-         * @param mixed $object
+         * @param Subject $object
          * @param mixed $state
          * @return boolean
          */
@@ -158,7 +158,6 @@ namespace observr {
          * Helper method that runs observer callbacks
          * @param mixed $object
          * @param array $observers
-         * @param string $state
          * @param mixed $e
          * @return array
          */
@@ -201,7 +200,7 @@ namespace observr {
 
         /**
          * Checks objects current state
-         * @param mixed $object
+         * @param Subject $object
          * @param string $state
          * @return boolean
          */
@@ -221,7 +220,7 @@ namespace observr {
 
         /**
          * Returns objects current state
-         * @param mixed $object
+         * @param Subject $object
          * @return string
          */
         static function getState($object) {
@@ -235,8 +234,8 @@ namespace observr {
         }
 
         /**
-         * performs event notification
-         * @param mixed $object
+         * initiaties event notification
+         * @param Subject $object
          * @param string $newstate
          * @param mixed $eventArgs
          * @return mixed

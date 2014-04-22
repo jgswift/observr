@@ -71,7 +71,7 @@ namespace observr {
         /**
          * changes subject state
          * @param string $state
-         * @param mixed $e
+         * @param mixed|Event $e
          * @return mixed
          */
         public function setState($state,$e=null)  {
