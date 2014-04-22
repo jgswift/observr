@@ -28,7 +28,7 @@ namespace observr {
 
         /**
          * check if object event is being watched
-         * @param Subject $subject
+         * @param mixed $subject
          * @param string $name
          * @return boolean
          */
@@ -41,7 +41,7 @@ namespace observr {
 
         /**
          * adds a closure to event listing
-         * @param Subject $subject
+         * @param mixed $subject
          * @param string $name
          * @param callable $observer
          */
@@ -54,7 +54,7 @@ namespace observr {
         /**
          * removes a closure from event listing
          * closure itself may be provided to remove only that specific callback
-         * @param Subject $subject
+         * @param mixed $subject
          * @param string $name
          * @param callable $observer
          */
@@ -98,7 +98,7 @@ namespace observr {
 
         /**
          * like hasObserver but accepts array of states to check for watchers
-         * @param Subject $object
+         * @param mixed $object
          * @param mixed $state
          * @return boolean
          */
@@ -200,7 +200,7 @@ namespace observr {
 
         /**
          * Checks objects current state
-         * @param Subject $object
+         * @param mixed $object
          * @param string $state
          * @return boolean
          */
@@ -220,7 +220,7 @@ namespace observr {
 
         /**
          * Returns objects current state
-         * @param Subject $object
+         * @param mixed $object
          * @return string
          */
         static function getState($object) {
@@ -234,8 +234,8 @@ namespace observr {
         }
 
         /**
-         * initiaties event notification
-         * @param Subject $object
+         * performs event notification
+         * @param mixed $object
          * @param string $newstate
          * @param mixed $eventArgs
          * @return mixed
