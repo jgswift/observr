@@ -146,41 +146,44 @@ namespace observr {
             self::$state[$id] = $state;
             if (!empty(self::$observers[$id][$state]))  {
                 $observers = self::$observers[$id][$state]; 
-
                 self::$observers[$id][$state] = null; // PREVENTS RECURSION
-                
-                if(is_null($e)) {
-                    $args = [$object];
-                } elseif($e instanceof Event) {
-                    $args = [$e->sender,$e];
-                } elseif(qtil\ArrayUtil::isIterable($e)) {
-                    $args = (array)$e;
-                } else {
-                    $args = [$e];
-                }
-  
-                foreach($observers as $observer) {
-                    if($observer instanceof \Closure) {
-                        $observer->bindTo($object,$object);
-                    }
-                    
-                    $result[] = call_user_func_array($observer, $args);
-                }
-
-                if($e instanceof Event) {
-                    if( self::hasObservers($e,[Event::FAIL,Event::DONE,Event::ALWAYS])) {
-                        $xe = new Event($object);
-                        if($e->canceled) {
-                            $e->setState(Event::FAIL, $xe);
-                        } else {
-                            $e->setState(Event::DONE, $xe);
-                        }
-
-                        $e->setState(Event::ALWAYS, $xe);
-                    }
-                }
-
+                $result = self::trigger($object,$observers,$state,$e);
                 self::$observers[$id][$state] = $observers;
+            } 
+            
+            return $result;
+        }
+        
+        /**
+         * Helper method that runs observer callbacks
+         * @param mixed $object
+         * @param array $observers
+         * @param string $state
+         * @param mixed $e
+         * @return array
+         */
+        protected static function trigger($object, array $observers, $state, $e) {
+            $result = [];
+            if(is_null($e)) {
+                $args = [$object];
+            } elseif($e instanceof Event) {
+                $args = [$e->sender,$e];
+            } elseif(qtil\ArrayUtil::isIterable($e)) {
+                $args = (array)$e;
+            } else {
+                $args = [$e];
+            }
+
+            foreach($observers as $observer) {
+                if($observer instanceof \Closure) {
+                    $observer->bindTo($object,$object);
+                }
+
+                $result[] = call_user_func_array($observer, $args);
+            }
+
+            if($e instanceof Event) {
+                $e->trigger($object);
             }
             
             return $result;

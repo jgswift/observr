@@ -78,6 +78,23 @@ namespace observr {
             $this->canceled = true;
             return false;
         }
+        
+        /**
+         * Helper method to attach additional mediator
+         * @param mixed $source
+         */
+        function trigger($source) {
+            if(Listener::hasObservers($this,[self::FAIL,self::DONE,self::ALWAYS])) {
+                $xe = new self($source);
+                if($this->canceled) {
+                    $this->setState(self::FAIL, $xe);
+                } else {
+                    $this->setState(self::DONE, $xe);
+                }
+
+                $this->setState(self::ALWAYS, $xe);
+            }
+        }
     }
 }
 
