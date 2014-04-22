@@ -28,7 +28,7 @@ namespace observr {
 
         /**
          * check if object event is being watched
-         * @param object $subject
+         * @param mixed $subject
          * @param string $name
          * @return boolean
          */
@@ -41,7 +41,7 @@ namespace observr {
 
         /**
          * adds a closure to event listing
-         * @param object $subject
+         * @param mixed $subject
          * @param string $name
          * @param Closure $observer
          */
@@ -54,7 +54,7 @@ namespace observr {
         /**
          * removes a closure from event listing
          * closure itself may be provided to remove only that specific callback
-         * @param object $subject
+         * @param mixed $subject
          * @param string $name
          * @param Closure $observer
          */
@@ -74,7 +74,7 @@ namespace observr {
 
         /**
          * internal function to setup subjects
-         * @param object $object
+         * @param mixed $object
          * @param boolean $new
          * @return string
          */
@@ -98,7 +98,7 @@ namespace observr {
 
         /**
          * like hasObserver but accepts array of states to check for watchers
-         * @param object $object
+         * @param mixed $object
          * @param mixed $state
          * @return boolean
          */
@@ -125,10 +125,10 @@ namespace observr {
 
         /**
          * internal function to notify observers an event was triggered
-         * @param object $object
+         * @param mixed $object
          * @param string $state
-         * @param Event $e
-         * @return null
+         * @param mixed $e
+         * @return array
          */
         protected static function notify($object, $state, $e = null) {
             $id = self::subject($object);
@@ -169,14 +169,14 @@ namespace observr {
 
                 if($e instanceof Event) {
                     if( self::hasObservers($e,[Event::FAIL,Event::DONE,Event::ALWAYS])) {
-                        $xe = new Event( $object );
-                        if( $e->canceled ) {
+                        $xe = new Event($object);
+                        if($e->canceled) {
                             $e->setState(Event::FAIL, $xe);
                         } else {
                             $e->setState(Event::DONE, $xe);
                         }
 
-                        $e->setState( Event::ALWAYS, $xe);
+                        $e->setState(Event::ALWAYS, $xe);
                     }
                 }
 
@@ -188,7 +188,7 @@ namespace observr {
 
         /**
          * retrieve all subject observers
-         * @param object $object
+         * @param mixed $object
          * @return array
          */
         public static function getObservers($object)  {
@@ -198,7 +198,7 @@ namespace observr {
 
         /**
          * Checks objects current state
-         * @param object $object
+         * @param mixed $object
          * @param string $state
          * @return boolean
          */
@@ -208,7 +208,7 @@ namespace observr {
             if(array_key_exists($id,self::$state)) {
                 if(self::$state[$id] === $state) {
                     return true;
-                } elseif(empty( self::$state[$id] ) && $state === false) {
+                } elseif(empty(self::$state[$id]) && $state === false) {
                     return true;
                 }
             }
@@ -218,7 +218,7 @@ namespace observr {
 
         /**
          * Returns objects current state
-         * @param object $object
+         * @param mixed $object
          * @return string
          */
         static function getState($object) {
@@ -233,7 +233,7 @@ namespace observr {
 
         /**
          * performs event notification
-         * @param object $object
+         * @param mixed $object
          * @param string $newstate
          * @param mixed $eventArgs
          * @return mixed
@@ -254,7 +254,7 @@ namespace observr {
 
         /**
          * detaches state entirely from subject
-         * @param object $object
+         * @param mixed $object
          * @param string $state
          * @return null
          */

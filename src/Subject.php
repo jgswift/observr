@@ -8,10 +8,10 @@ namespace observr {
         /**
          * attaches observer to subject
          * @param string $name
-         * @param Closure $observer
+         * @param callable $observer
          * @return self
          */
-        function attach($name, $observer) {
+        function attach($name,callable $observer) {
             Listener::addObserver($this,$name,$observer);
             return $this;
         }
@@ -19,10 +19,10 @@ namespace observr {
         /**
          * detaches observer from subject
          * @param string $name
-         * @param Closure $observer
+         * @param callable $observer
          * @return self
          */
-        public function detach($name, $observer=null) {
+        public function detach($name,callable $observer=null) {
             if(Listener::hasObserver($this,$name)) {
                 Listener::removeObserver($this,$name,$observer);
             }

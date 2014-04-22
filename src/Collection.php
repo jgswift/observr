@@ -5,22 +5,29 @@ namespace observr {
     class Collection extends qtil\Collection {
         use Subject;
         
+        private function trigger($event, array $args = []) {
+            if($this->hasObservers($event)) {
+                $e = new Event($this,$args);
+                
+                $this->setState($event, $e);
+                if($e->canceled) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
         /**
          * Array accessor that notifies subject of access
          * @param mixed $offset
          * @return mixed
          */
         public function offsetGet($offset) {
-            if($this->hasObservers('get')) {
-                $e = new observr\Event($this,[
-                    'offset'=>$offset
-                ]);
-                
-                $this->setState('get', $e);
-                if($e->canceled) {
-                    return null;
-                }
+            if(!$this->trigger('get',['offset'=>$offset])) {
+                return;
             }
+            
             return parent::offsetGet($offset);
         }
         
@@ -30,16 +37,11 @@ namespace observr {
          * @param mixed $value
          */
         public function offsetSet($offset, $value) {
-            if($this->hasObservers('set')) {
-                $e = new observr\Event($this,[
+            if(!$this->trigger('set',[
                     'offset'=>$offset,
                     'value'=>$value
-                ]);
-                
-                $this->setState('set', $e);
-                if($e->canceled) {
-                    return;
-                }
+                ])) {
+                return;
             }
             
             parent::offsetSet($offset, $value);
@@ -50,15 +52,10 @@ namespace observr {
          * @param mixed $offset
          */
         public function offsetExists($offset) {
-            if($this->hasObservers('exists')) {
-                $e = new observr\Event($this,[
+            if(!$this->trigger('exists',[
                     'offset'=>$offset
-                ]);
-                
-                $this->setState('exists', $e);
-                if($e->canceled) {
-                    return false;
-                }
+                ])) {
+                return false;
             }
             
             return parent::offsetExists($offset);
@@ -69,17 +66,12 @@ namespace observr {
          * @param mixed $offset
          */
         public function offsetUnset($offset) {
-            if($this->hasObservers('unset')) {
-                $e = new observr\Event($this,[
+            if(!$this->trigger('unset',[
                     'offset'=>$offset
-                ]);
-                
-                $this->setState('unset', $e);
-                if($e->canceled) {
-                    return;
-                }
+                ])) {
+                return;
             }
-            
+
             parent::offsetUnset($offset);
         }
     }

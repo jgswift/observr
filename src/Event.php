@@ -15,7 +15,7 @@ namespace observr {
         
         /**
          * Specified by constructor, this object is what originated the event
-         * @var object
+         * @var mixed
          */
         public $sender = null;
 
@@ -25,7 +25,7 @@ namespace observr {
 
         /**
          * Constructor for Event
-         * @param object $sender
+         * @param mixed $sender
          * @param array $arguments
          */
         function __construct($sender,$arguments = []) {
@@ -67,7 +67,7 @@ namespace observr {
 
         /**
          * Cancels event
-         * @param Event $e
+         * @param mixed $e
          * @return boolean
          */
         function cancel($e = null) {
