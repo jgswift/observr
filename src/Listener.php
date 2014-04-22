@@ -162,7 +162,7 @@ namespace observr {
          * @param mixed $e
          * @return array
          */
-        protected static function trigger($object, array $observers, $state, $e) {
+        protected static function trigger($object, array $observers, $state, $e=null) {
             $result = [];
             if(is_null($e)) {
                 $args = [$object];
