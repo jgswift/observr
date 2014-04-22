@@ -43,9 +43,9 @@ namespace observr {
          * adds a closure to event listing
          * @param mixed $subject
          * @param string $name
-         * @param Closure $observer
+         * @param callable $observer
          */
-        static function addObserver($subject, $name, $observer) {
+        static function addObserver($subject, $name, callable $observer) {
             $id = self::subject($subject);
 
             self::$observers[$id][$name][] = $observer;
@@ -56,9 +56,9 @@ namespace observr {
          * closure itself may be provided to remove only that specific callback
          * @param mixed $subject
          * @param string $name
-         * @param Closure $observer
+         * @param callable $observer
          */
-        static function removeObserver($subject, $name, $observer = null) {
+        static function removeObserver($subject, $name, callable $observer = null) {
             $id = self::subject($subject);
 
             if(isset(self::$observers[$id][$name])) {

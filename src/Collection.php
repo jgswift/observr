@@ -5,17 +5,23 @@ namespace observr {
     class Collection extends qtil\Collection {
         use Subject;
         
+        /**
+         * Helper method to reduce code duplication
+         * @param string $event
+         * @param array $args
+         * @return boolean
+         */
         private function trigger($event, array $args = []) {
-            if($this->hasObservers($event)) {
+            if($this->hasObservers($event)) { // CHECK FOR OBSERVERS
                 $e = new Event($this,$args);
                 
                 $this->setState($event, $e);
                 if($e->canceled) {
-                    return false;
+                    return false; // EVENT CANCELLED TRIGGER
                 }
             }
             
-            return true;
+            return true; // ASSUME VALID
         }
         
         /**
