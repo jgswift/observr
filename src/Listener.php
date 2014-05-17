@@ -15,18 +15,6 @@ namespace observr {
         public static $observers = [];
         
         /**
-         * array of states keyed by qtil identifier
-         * @var array 
-         */
-        public static $state = [];
-        
-        /**
-         * array of qtil identifiers ids
-         * @var array 
-         */
-        public static $ids = [];
-
-        /**
          * check if object event is being watched
          * @param mixed $subject
          * @param string $name
@@ -78,18 +66,16 @@ namespace observr {
          * @param boolean $new
          * @return string
          */
-        private static function subject($object, &$new = false) {
+        public static function subject($object, &$new = false) {
             $id = qtil\Identifier::identify($object);
 
-            if(in_array($id,self::$ids)) {
+            if(array_key_exists($id,self::$subjects)) {
                 self::$subjects[$id] = $object;
                 return $id;
             }
 
             self::$observers[$id] = [];
-            self::$state[$id] = [];
             self::$subjects[$id] = $object;
-            self::$ids[] = $id;
 
             $new = true;
 
@@ -143,7 +129,6 @@ namespace observr {
 
             $result = [];
             
-            self::$state[$id] = $state;
             if (!empty(self::$observers[$id][$state]))  {
                 $observers = self::$observers[$id][$state]; 
                 self::$observers[$id][$state] = null; // PREVENTS RECURSION
@@ -199,41 +184,6 @@ namespace observr {
         }
 
         /**
-         * Checks objects current state
-         * @param mixed $object
-         * @param string $state
-         * @return boolean
-         */
-        static function isState($object, $state) {
-            $id = self::subject($object);
-
-            if(array_key_exists($id,self::$state)) {
-                if(self::$state[$id] === $state) {
-                    return true;
-                } elseif(empty(self::$state[$id]) && $state === false) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /**
-         * Returns objects current state
-         * @param mixed $object
-         * @return string
-         */
-        static function getState($object) {
-            $id = qtil\Identifier::identify($object);
-
-            if( empty( self::$state[$id] )) {
-                return;
-            }
-
-            return self::$state[$id];
-        }
-
-        /**
          * performs event notification
          * @param mixed $object
          * @param string $newstate
@@ -243,6 +193,8 @@ namespace observr {
         static function state($object,$newstate=null,$eventArgs=null) {
             $id = qtil\Identifier::identify($object);
 
+            State::setState($object,$newstate);
+            
             if(empty(self::$observers[$id])) {
                 return;
             }

@@ -35,7 +35,7 @@ namespace observr {
          * @return boolean
          */
         public function isState($state) {
-            return Listener::isState($this,$state);
+            return State::isState($this,$state);
         }
 
         /**
@@ -65,7 +65,7 @@ namespace observr {
          * @return string
          */
         public function getState() {
-            return Listener::getState($this);
+            return State::getState($this);
         }
 
         /**

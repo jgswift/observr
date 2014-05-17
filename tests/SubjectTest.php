@@ -113,5 +113,15 @@ namespace observr\Tests {
             
             $this->assertEquals(['hello'],$token);
         }
+        
+        function testState() {
+            $user = new Mock\User;
+            
+            $user->setState('login');
+            
+            $this->assertEquals(true,$user->isState('login'));
+            
+            $this->assertEquals('login',$user->getState());
+        }
     }
 }
