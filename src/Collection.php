@@ -29,7 +29,7 @@ namespace observr {
          * @param mixed $offset
          * @return mixed
          */
-        public function offsetGet($offset) {
+        public function &offsetGet($offset) {
             if(!$this->trigger('get',['offset'=>$offset])) {
                 return;
             }

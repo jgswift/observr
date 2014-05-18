@@ -11,7 +11,7 @@ namespace observr {
          * @param callable $observer
          * @return self
          */
-        function attach($name,callable $observer) {
+        public function attach($name,callable $observer) {
             Listener::addObserver($this,$name,$observer);
             return $this;
         }
