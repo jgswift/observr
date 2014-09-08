@@ -3,7 +3,7 @@ namespace observr {
     use qtil;
     use qio;
     
-    class Stream implements qio\Stream {
+    class Stream {
         use Subject {
             Subject::attach as _attach;
             Subject::detach as _detach;
@@ -24,7 +24,7 @@ namespace observr {
         
         /**
          * Context
-         * @var \observr\Stream\Context 
+         * @var qio\Context 
          */
         private $context;
         
@@ -53,25 +53,8 @@ namespace observr {
         public function close() {
             if($this->enabled) {
                 $this->enabled = false;
-                $this->setState(self::STATE_CLOSE);
                 Listener::removeStream($this);
             }
-        }
-
-        /**
-         * Retrieve context
-         * @return \observr\Stream\Context
-         */
-        public function getContext() {
-            return $this->context;
-        }
-
-        /**
-         * N/A
-         * @return null
-         */
-        public function getDefaultEncoding() {
-            return null;
         }
 
         /**
@@ -96,24 +79,8 @@ namespace observr {
         public function open() {
             if(!$this->enabled) {
                 $this->enabled = true;
-                $this->setState(self::STATE_OPEN);
                 Listener::addStream($this);
             }
-        }
-
-        /**
-         * Update context
-         * @param qio\Context $context
-         */
-        public function setContext(qio\Context $context) {
-            $this->context = $context;
-        }
-
-        /**
-         * Disabled
-         * @param mixed $pointer
-         */
-        public function setPointer($pointer) {
         }
 
         /**

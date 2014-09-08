@@ -7,9 +7,18 @@ PHP 5.5+ observer pattern using traits
 
 ## Installation
 
-Install via [composer](https://getcomposer.org/):
+Install via cli using [composer](https://getcomposer.org/):
 ```sh
-php composer.phar require jgswift/observr:dev-master
+php composer.phar require jgswift/observr:0.1.*
+```
+
+Install via composer.json using [composer](https://getcomposer.org/):
+```json
+{
+    "require": {
+        "jgswift/observr": "0.1.*"
+    }
+}
 ```
 
 ## Usage
@@ -34,7 +43,7 @@ $foo->attach("bar",function($sender,$e) {
 var_dump($foo->setState("bar")); // returns "baz"
 ```
 
-### Pass-thru
+### State Change
 
 Use observr\Event to define pass-thru variables or for event cancellation.  You can implement custom pass-thrus by inheriting observr\Event
 
@@ -109,7 +118,7 @@ Using the same observr\Event, setting $foo state to "baz" fails to complete and 
 
 ### Streaming
 
-The stream provides an easy way to wrap around multiple subjects at once.
+The stream provides an easy way to wrap around multiple subjects at once and listen to many events.
 
 ```php
 $bob = new User

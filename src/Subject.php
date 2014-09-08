@@ -9,7 +9,7 @@ namespace observr {
          * attaches observer to subject
          * @param string $name
          * @param callable $observer
-         * @return self
+         * @return mixed
          */
         public function attach($name,callable $observer) {
             Listener::addObserver($this,$name,$observer);
@@ -20,7 +20,7 @@ namespace observr {
          * detaches observer from subject
          * @param string $name
          * @param callable $observer
-         * @return self
+         * @return mixed
          */
         public function detach($name,callable $observer=null) {
             if(Listener::hasObserver($this,$name)) {
