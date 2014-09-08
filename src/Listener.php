@@ -15,6 +15,28 @@ namespace observr {
         public static $observers = [];
         
         /**
+         * List of streams
+         * @var array 
+         */
+        public static $streams = [];
+        
+        /**
+         * Adds stream to listener
+         * @param \observr\Stream $stream
+         */
+        static function addStream(Stream $stream) {
+            self::$streams[] = $stream;
+        }
+        
+        /**
+         * Deletes stream from listener
+         * @param \observr\Stream $stream
+         */
+        static function removeStream(Stream $stream) {
+            unset(self::$streams[array_search($stream,self::$streams)]);
+        }
+        
+        /**
          * check if object event is being watched
          * @param mixed $subject
          * @param string $name
@@ -35,8 +57,19 @@ namespace observr {
          */
         static function addObserver($subject, $name, callable $observer) {
             $id = self::subject($subject);
+            
+            if(!is_string($name) && is_array($name)) {
+                foreach($name as $n) {
+                    self::addObserver($subject, $n, $observer);
+                }
+                return;
+            }
 
             self::$observers[$id][$name][] = $observer;
+        }
+        
+        static function watch($subject, $name, callable $observer) {
+            self::addObserver($subject, $name, $observer);
         }
 
         /**
@@ -132,6 +165,9 @@ namespace observr {
             if (!empty(self::$observers[$id][$state]))  {
                 $observers = self::$observers[$id][$state]; 
                 self::$observers[$id][$state] = null; // PREVENTS RECURSION
+                if($e instanceof Event) {
+                    $e->name = $state;
+                }
                 $result = self::trigger($object,$observers,$e);
                 self::$observers[$id][$state] = $observers;
             } 
@@ -159,10 +195,6 @@ namespace observr {
             }
 
             foreach($observers as $observer) {
-                if($observer instanceof \Closure) {
-                    $observer->bindTo($object,$object);
-                }
-
                 $result[] = call_user_func_array($observer, $args);
             }
 
@@ -182,6 +214,24 @@ namespace observr {
             $id = self::subject($object);
             return self::$observers[$id];
         }
+        
+        /**
+         * Streams event to outside observers
+         * @param mixed $object
+         * @param string $newstate
+         * @param mixed $eventArgs
+         */
+        private static function stream($object,$newstate=null,$eventArgs=null) {
+            if(!empty(self::$streams)) {
+                foreach(self::$streams as $stream) {
+                    if($stream->name === $newstate && 
+                       $stream->isOpen() && 
+                       $stream->isWatching($object)) {
+                            $stream->setState($newstate,$eventArgs);
+                    }
+                }
+            }
+        }
 
         /**
          * performs event notification
@@ -192,8 +242,18 @@ namespace observr {
          */
         static function state($object,$newstate=null,$eventArgs=null) {
             $id = qtil\Identifier::identify($object);
+            
+            if(!is_string($newstate) && is_array($newstate)) {
+                $results = [];
+                foreach($newstate as $ns) {
+                    $results[] = self::state($object,$ns,$eventArgs);
+                }
+                return $results;
+            }
 
             State::setState($object,$newstate);
+            
+            self::stream($object,$newstate,$eventArgs);
             
             if(empty(self::$observers[$id])) {
                 return;

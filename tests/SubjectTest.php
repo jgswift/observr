@@ -43,7 +43,7 @@ namespace observr\Tests {
                 $c++;
             });
             
-            $user->attach('login',function($s,$e) { /* .. */ });
+            $user->attach('login',function($s,$e=null) { /* .. */ });
             
             $user->setState('login',$event);
             
@@ -122,6 +122,36 @@ namespace observr\Tests {
             $this->assertEquals(true,$user->isState('login'));
             
             $this->assertEquals('login',$user->getState());
+        }
+        
+        function testMultipleNotify() {
+            $user = new Mock\User;
+            
+            $c=0;
+            $user->attach('login',function()use(&$c) {
+                $c++;
+            });
+            
+            $user->attach('enter',function()use(&$c) {
+                $c++;
+            });
+            
+            $user->setState(['login','enter']);
+            
+            $this->assertEquals(2,$c);
+        }
+        
+        function testMultipleAttach() {
+            $user = new Mock\User;
+            
+            $c=0;
+            $user->attach(['login','enter'],function()use(&$c) {
+                $c++;
+            });
+            
+            $user->setState(['login','enter']);
+            
+            $this->assertEquals(2,$c);
         }
     }
 }

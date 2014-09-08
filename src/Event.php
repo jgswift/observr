@@ -18,6 +18,12 @@ namespace observr {
          * @var mixed
          */
         public $sender = null;
+        
+        /**
+         * Event name, transient depending on setState
+         * @var string
+         */
+        public $name = null;
 
         const DONE = 'done';
         const FAIL = 'fail';
