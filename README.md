@@ -21,6 +21,11 @@ Install via composer.json using [composer](https://getcomposer.org/):
 }
 ```
 
+## Dependency
+
+* php 5.5+
+* [jgswift/qtil](http://github.com/jgswift/qtil) - general utility library
+
 ## Usage
 
 ### Basic example
@@ -118,7 +123,7 @@ Using the same observr\Event, setting $foo state to "baz" fails to complete and 
 
 ### Streaming
 
-The stream provides an easy way to wrap around multiple subjects at once and listen to many events.
+A stream provides an easy way to wrap around multiple subjects at once and listen to many events.
 
 ```php
 $bob = new User
@@ -147,4 +152,8 @@ $stream->close();
 
 var_dump($c); // 2
 ```
+
+## Related Package(s)
+
+* [jgswift/detectr](http://github.com/jgswift/detectr) - complex event processor
 
