@@ -4,6 +4,9 @@ PHP 5.5+ observer pattern using traits
 
 [![Build Status](https://travis-ci.org/jgswift/observr.png?branch=master)](https://travis-ci.org/jgswift/observr)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jgswift/observr/badges/quality-score.png?s=87a44242339b2b007df16d5847b06c0246500931)](https://scrutinizer-ci.com/g/jgswift/observr/)
+[![Latest Stable Version](https://poser.pugx.org/jgswift/observr/v/stable.svg)](https://packagist.org/packages/jgswift/observr)
+[![License](https://poser.pugx.org/jgswift/observr/license.svg)](https://packagist.org/packages/jgswift/observr)
+[![Coverage Status](https://coveralls.io/repos/jgswift/observr/badge.png?branch=master)](https://coveralls.io/r/jgswift/observr?branch=master)
 
 ## Installation
 
