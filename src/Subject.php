@@ -86,7 +86,7 @@ namespace observr {
         /**
          * clear subject state
          * @param string $state
-         * @return self
+         * @return mixed
          */
         public function clearState($state) {
             Listener::unwatch($this,$state);

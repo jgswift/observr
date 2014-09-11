@@ -15,28 +15,6 @@ namespace observr {
         public static $observers = [];
         
         /**
-         * List of streams
-         * @var array 
-         */
-        public static $streams = [];
-        
-        /**
-         * Adds stream to listener
-         * @param \observr\Stream $stream
-         */
-        static function addStream(Stream $stream) {
-            self::$streams[] = $stream;
-        }
-        
-        /**
-         * Deletes stream from listener
-         * @param \observr\Stream $stream
-         */
-        static function removeStream(Stream $stream) {
-            unset(self::$streams[array_search($stream,self::$streams)]);
-        }
-        
-        /**
          * check if object event is being watched
          * @param mixed $subject
          * @param string $name
@@ -216,24 +194,6 @@ namespace observr {
         }
         
         /**
-         * Streams event to outside observers
-         * @param mixed $object
-         * @param string $newstate
-         * @param mixed $eventArgs
-         */
-        private static function stream($object,$newstate=null,$eventArgs=null) {
-            if(!empty(self::$streams)) {
-                foreach(self::$streams as $stream) {
-                    if($stream->name === $newstate && 
-                       $stream->isOpen() && 
-                       $stream->isWatching($object)) {
-                            $stream->setState($newstate,$eventArgs);
-                    }
-                }
-            }
-        }
-
-        /**
          * performs event notification
          * @param mixed $object
          * @param string $newstate
@@ -253,7 +213,7 @@ namespace observr {
 
             State::setState($object,$newstate);
             
-            self::stream($object,$newstate,$eventArgs);
+            Emitter::stream($object,$newstate,$eventArgs);
             
             if(empty(self::$observers[$id])) {
                 return;

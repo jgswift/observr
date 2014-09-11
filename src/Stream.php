@@ -53,7 +53,7 @@ namespace observr {
         public function close() {
             if($this->enabled) {
                 $this->enabled = false;
-                Listener::removeStream($this);
+                Emitter::removeStream($this);
             }
         }
 
@@ -79,7 +79,7 @@ namespace observr {
         public function open() {
             if(!$this->enabled) {
                 $this->enabled = true;
-                Listener::addStream($this);
+                Emitter::addStream($this);
             }
         }
 
