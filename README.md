@@ -124,6 +124,53 @@ In this example, observr\Event is assigned all 3 built-in observers
 Setting $foo state to "bar" successfully completes and notifies both *DONE* and *ALWAYS*
 Using the same observr\Event, setting $foo state to "baz" fails to complete and notifies *FAIL* and ALWAYS*
 
+### Source
+
+Source is a standalone subject implementation for events you need to encapsulate
+
+#### Combining Source Events
+
+```php
+class Button {
+    function __construct() {
+        $this->click = new observr\Source('click');
+        $this->mouseup = new observr\Source('mouseup');
+        $this->mousedown = new observr\Source('mousedown');
+    }
+}
+
+$button = new Button;
+
+$combinedClick = $button->click->map(function($sender, $e) {
+    /* extra mapping */
+})->merge($button->mousedown->map(function($sender,$e) {
+    /* extra mapping */
+}))->merge($button->mouseup->map(function($sender,$e) {
+    /* extra mapping */
+}));
+
+$combinedClick($button); // performs click, mousedown & mouseup all together
+```
+
+#### Filtering
+
+Filtering allows mapping procedures to be applied selectively
+
+```php
+$sending = $button->click
+  ->filter(function($button,$e) {
+    if($button instanceof Button) { // only changes Button to "Sending..."
+        return true;
+    }
+
+    return false;
+})->map(function($button,$e) {
+    $button->value = 'Sending...';
+});
+
+$sending($button); // triggers click and changes button text to "Sending..."
+```
+
 ### Streaming
 
 A stream provides an easy way to wrap around multiple subjects at once and listen to many events.

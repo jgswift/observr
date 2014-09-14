@@ -5,7 +5,70 @@ namespace observr\Tests {
     /**
      * @package observr
      */
-    class SubjectTest extends ObservrTestCase {        
+    class SubjectTest extends ObservrTestCase {
+        function testCombinedEventSource() {
+            $click = new observr\Source('click');
+            $mouseup = new observr\Source('mouseup');
+            $mousedown = new observr\Source('mousedown');
+            
+            $combined = $click->map(function($sender, $e) {
+                return $e['x'] = 'Click';
+            })->merge($mousedown->map(function($sender,$e) {
+                return $e['x'] = 'Mousedown';
+            }))->merge($mouseup->map(function($sender,$e) {
+                return $e['x'] = 'Mouseup';
+            }));
+            
+            $button = new Mock\Button;
+            
+            $c = 0;
+            $button->attach($click,function($sender,$e)use(&$c) {
+                $this->assertEquals('Click',$e['x']);
+                $c++;
+            });
+            
+            $button->attach($mouseup,function($sender,$e)use(&$c) {
+                $this->assertEquals('Mouseup',$e['x']);
+                $c++;
+            }); 
+            
+            $button->attach($mousedown,function($sender,$e)use(&$c) {
+                $this->assertEquals('Mousedown',$e['x']);
+                $c++;
+            }); 
+            
+            $combined($button);
+            
+            $this->assertEquals(3,$c);
+        }
+        
+        function testEventFilter() {
+            $click = new observr\Source('click');
+            
+            $doOK = $click
+              ->filter(function($button,$e) {
+                if($button instanceof Mock\Button) {
+                    return true;
+                }
+                
+                return false;
+            })->map(function($button,$e) {
+                $button->value = 'Ok';
+            });
+            
+            $button = new Mock\Button;
+            
+            $c = 0;
+            $button->attach($click,function($sender,$e)use(&$c) {
+                $c++;
+            });
+            
+            $doOK($button);
+            
+            $this->assertEquals(1,$c);
+            $this->assertEquals('Ok',$button->value);
+        }
+                
         function testSubjectDetach() {
             $user = new Mock\User;
             

@@ -1,6 +1,7 @@
 <?php
 namespace observr {
     use qtil;
+    
     class Listener {
         /**
          * array of subjects keyed by qtil identifier
@@ -22,6 +23,10 @@ namespace observr {
          */
         static function hasObserver($subject, $name) {
             $id = self::subject($subject);
+            
+            if($name instanceof qtil\Interfaces\Nameable) {
+                $name = $name->getName();
+            }
 
             return array_key_exists($name, self::$observers[$id] ) && 
                    !empty( self::$observers[$id][$name]);
@@ -29,23 +34,31 @@ namespace observr {
 
         /**
          * adds a closure to event listing
-         * @param mixed $subject
+         * @param mixed|array|\qtil\Interfaces\Nameable $subject
          * @param string $name
          * @param callable $observer
          */
         static function addObserver($subject, $name, callable $observer) {
             $id = self::subject($subject);
             
-            if(!is_string($name) && is_array($name)) {
-                foreach($name as $n) {
-                    self::addObserver($subject, $n, $observer);
+            if(!is_string($name)) {
+                if(is_array($name)) {
+                    foreach($name as $n) {
+                        self::addObserver($subject, $n, $observer);
+                    }
+                    return;
+                } elseif($name instanceof qtil\Interfaces\Nameable) {
+                    $name = $name->getName();
                 }
-                return;
             }
 
             self::$observers[$id][$name][] = $observer;
         }
         
+        /**
+         * Alias for addObservr
+         * @see addObserver
+         */
         static function watch($subject, $name, callable $observer) {
             self::addObserver($subject, $name, $observer);
         }
@@ -59,9 +72,13 @@ namespace observr {
          */
         static function removeObserver($subject, $name, callable $observer = null) {
             $id = self::subject($subject);
+            
+            if($name instanceof qtil\Interfaces\Nameable) {
+                $name = $name->getName();
+            }
 
             if(isset(self::$observers[$id][$name])) {
-                if(isset($observer )) {
+                if(isset($observer)) {
                     if(($key = array_search($observer, self::$observers[$id][$name]) !== false)) {
                         unset(self::$observers[$id][$name][$key]);
                     }
@@ -99,11 +116,15 @@ namespace observr {
          * @param mixed $state
          * @return boolean
          */
-        public static function hasObservers($object, $state) {
+        public static function hasObservers($object, $name) {
             $id = self::subject($object);
 
-            if(!is_array($state)) {
-                $state = [$state];
+            if($name instanceof qtil\Interfaces\Nameable) {
+                $name = $name->getName();
+            }
+            
+            if(!is_array($name)) {
+                $name = [$name];
             }
 
             if(empty(self::$observers[$id])) {
@@ -111,7 +132,7 @@ namespace observr {
             }
 
             $ret = false;
-            foreach($state as $s) {
+            foreach($name as $s) {
                 if(array_key_exists($s, self::$observers[$id])) {
                     $ret = true;
                 }
@@ -127,27 +148,31 @@ namespace observr {
          * @param mixed $e
          * @return array
          */
-        protected static function notify($object, $state, $e=null) {
+        protected static function notify($object, $name, $e=null) {
             $id = self::subject($object);
 
             if(empty(self::$observers[$id])) {
                 return;
             }
+            
+            if($name instanceof qtil\Interfaces\Nameable) {
+                $name = $name->getName();
+            }
 
-            if(!array_key_exists($state,self::$observers[$id])) {
+            if(!array_key_exists($name,self::$observers[$id])) {
                 return;
             }
 
             $result = [];
             
-            if (!empty(self::$observers[$id][$state]))  {
-                $observers = self::$observers[$id][$state]; 
-                self::$observers[$id][$state] = null; // PREVENTS RECURSION
+            if (!empty(self::$observers[$id][$name]))  {
+                $observers = self::$observers[$id][$name]; 
+                self::$observers[$id][$name] = null; // PREVENTS RECURSION
                 if($e instanceof Event) {
-                    $e->name = $state;
+                    $e->name = $name;
                 }
                 $result = self::trigger($object,$observers,$e);
-                self::$observers[$id][$state] = $observers;
+                self::$observers[$id][$name] = $observers;
             } 
             
             return $result;
@@ -203,12 +228,16 @@ namespace observr {
         static function state($object,$newstate=null,$eventArgs=null) {
             $id = qtil\Identifier::identify($object);
             
-            if(!is_string($newstate) && is_array($newstate)) {
-                $results = [];
-                foreach($newstate as $ns) {
-                    $results[] = self::state($object,$ns,$eventArgs);
+            if(!is_string($newstate)) {
+                if(is_array($newstate)) {
+                    $results = [];
+                    foreach($newstate as $ns) {
+                        $results[] = self::state($object,$ns,$eventArgs);
+                    }
+                    return $results;
+                } elseif($newstate instanceof qtil\Interfaces\Nameable) {
+                    $newstate = $newstate->getName();
                 }
-                return $results;
             }
 
             State::setState($object,$newstate);
@@ -237,6 +266,10 @@ namespace observr {
 
             if(empty(self::$observers[$id])) {
                 return;
+            }
+            
+            if($state instanceof qtil\Interfaces\Nameable) {
+                $state = $state->getName();
             }
 
             if(empty(self::$observers[$id][$state])) {
