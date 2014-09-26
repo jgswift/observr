@@ -135,7 +135,7 @@ namespace observr\State {
         
         /**
          * Replaces detach from subject
-         * @param \observr\callable $observer
+         * @param callable|null $observer
          */
         public function detach(callable $observer = null) {
             $this->_detach($this->listener->getName(),$observer);
