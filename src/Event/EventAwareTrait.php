@@ -12,7 +12,7 @@ namespace observr\Event {
         /**
          * @see \observr\Subject\FixtureInterface
          */
-        abstract function setState();
+        abstract function setState($state, $e = null);
         
         /**
          * Completes event
