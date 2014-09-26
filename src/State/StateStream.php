@@ -11,8 +11,8 @@ namespace observr\State {
     /**
      * StateStream
      * 
-     * @method null _attach() _attach($name, callable $observer)
-     * @method null _detach() _detach($name, callable $observer = null)
+     * @method null _attach($name, callable $observer)
+     * @method null _detach($name, callable $observer = null)
      */
     class StateStream implements StreamInterface, FixtureInterface, StreamSubjectInterface {
         use SubjectTrait {
