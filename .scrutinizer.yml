@@ -1,5 +1,41 @@
 # .scrutinizer.yml
+tools:
+    external_code_coverage: true
+    php_mess_detector: true
+    php_code_sniffer: true
+    sensiolabs_security_checker: true
+    php_code_coverage: true
+    php_pdepend: true
+    php_loc:
+        enabled: true
+        excluded_dirs: [vendor, tests]
+    php_cpd:
+        enabled: true
+        excluded_dirs: [vendor, tests]
 build:
     environment:
-        php:
-            version: 5.5.12
+            php: '5.5.12'
+    dependencies:
+        # Runs before inferred commands
+        before:
+            - 'phpunit --coverage-clover=coverage.clover'            
+        # Overwrites inferred commands
+        override:
+            - 'php ocular.phar code-coverage:upload --api-url="https://scrutinizer-ci.com/ocular.phar" --access-token="cdf0b0b1f2a15a75c6be94c5a74625e73df1af4a40fd885e42d3dfe8016ac770" --format=php-clover --repository="mouyse/TwitterTimelineChallenge" coverage.clover '        
+    # tools:
+    #    php_code_coverage:
+     #       test_command: phpunit tests/SimpleTest.php
+    tests:
+        before:
+            -
+                command: 'phpunit tests/SimpleTest.php'
+        override:
+            -
+                command: vendor/bin/phpunit --coverage-clover=coverage.clover
+                coverage:
+                    file: coverage.clover
+                    format: php-clover
+checks:
+    php:
+        code_rating: true
+        duplication: true
