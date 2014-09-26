@@ -7,9 +7,9 @@ namespace observr\Tests {
      */
     class SubjectTest extends ObservrTestCase {
         function testCombinedEventSource() {
-            $click = new observr\Source('click');
-            $mouseup = new observr\Source('mouseup');
-            $mousedown = new observr\Source('mousedown');
+            $click = new observr\Emitter('click');
+            $mouseup = new observr\Emitter('mouseup');
+            $mousedown = new observr\Emitter('mousedown');
             
             $combined = $click->map(function($sender, $e) {
                 return $e['x'] = 'Click';
@@ -43,7 +43,7 @@ namespace observr\Tests {
         }
         
         function testEventFilter() {
-            $click = new observr\Source('click');
+            $click = new observr\Emitter('click');
             
             $doOK = $click
               ->filter(function($button,$e) {
@@ -129,7 +129,6 @@ namespace observr\Tests {
             });
             
             $c = $user->setState('login');
-            
             $this->assertEquals([1,2],$c);
         }
         
@@ -145,7 +144,7 @@ namespace observr\Tests {
             
             $user->setState('login',$e);
             
-            $this->assertEquals(true,$e->canceled);
+            $this->assertEquals(true,$e->isCanceled());
         }
         
         function testUnwatchAll() {
@@ -157,7 +156,7 @@ namespace observr\Tests {
             });
             
             // clears out all observers so c will remain 0
-            $user->clearState('login');
+            $user->unsetState('login');
             
             $user->setState('login');
             
@@ -167,8 +166,8 @@ namespace observr\Tests {
         function testEventArrayArg() {
             $user = new Mock\User;
             
-            $user->attach('login',function($token) {
-                return $token;
+            $user->attach('login',function($user, $e) {
+                return $e[0];
             });
             
             // uses array as argument
@@ -177,14 +176,14 @@ namespace observr\Tests {
             $this->assertEquals(['hello'],$token);
         }
         
-        function testState() {
+        function testBlankState() {
             $user = new Mock\User;
             
             $user->setState('login');
             
             $this->assertEquals(true,$user->isState('login'));
             
-            $this->assertEquals('login',$user->getState());
+            $this->assertEquals(['login'],$user->getState());
         }
         
         function testMultipleNotify() {
@@ -215,6 +214,59 @@ namespace observr\Tests {
             $user->setState(['login','enter']);
             
             $this->assertEquals(2,$c);
+        }
+        
+        function testEventAfter() {
+            $user = new Mock\User;
+            
+            $user->attach('login',function($s,$e) {
+                $e->cancel();
+            });
+            
+            $user->attach('logout',function($s,$e) {
+                throw new \Exception('omg!');
+                // something
+            });
+            
+            $user->attach('editprofile',function($s,$e) {
+                // nothing
+            });
+            
+            $e = new observr\Event($user);
+            
+            $match = [
+                'complete',
+                'success',
+                'failure',
+                'complete',
+                'canceled'
+            ];
+            
+            $results = [];
+            
+            $e->attach(observr\Event::COMPLETE,function()use(&$results) {
+                $results[] = 'complete';
+            });
+            
+            $e->attach(observr\Event::CANCEL,function()use(&$results) {
+                $results[] = 'canceled';
+            });
+            
+            $e->attach(observr\Event::FAILURE,function()use(&$results) {
+                $results[] = 'failure';
+            });
+            
+            $e->attach(observr\Event::SUCCESS,function()use(&$results) {
+                $results[] = 'success';
+            });
+            
+            $user->setState('editprofile',$e);
+            
+            $user->setState('logout',$e);
+            
+            $user->setState('login',$e);
+            
+            $this->assertEquals($match,$results);
         }
     }
 }

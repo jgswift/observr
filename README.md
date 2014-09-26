@@ -1,6 +1,6 @@
 observr
 ====
-PHP 5.5+ observer pattern using traits
+PHP 5.5+ event layer
 
 [![Build Status](https://travis-ci.org/jgswift/observr.png?branch=master)](https://travis-ci.org/jgswift/observr)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jgswift/observr/badges/quality-score.png?s=87a44242339b2b007df16d5847b06c0246500931)](https://scrutinizer-ci.com/g/jgswift/observr/)
@@ -8,18 +8,22 @@ PHP 5.5+ observer pattern using traits
 [![License](https://poser.pugx.org/jgswift/observr/license.svg)](https://packagist.org/packages/jgswift/observr)
 [![Coverage Status](https://coveralls.io/repos/jgswift/observr/badge.png?branch=master)](https://coveralls.io/r/jgswift/observr?branch=master)
 
+## Description
+
+observr is a generic event layer that provides a flexible foundation for event handling in a domain-agnostic and non-intrusive way.
+
 ## Installation
 
 Install via cli using [composer](https://getcomposer.org/):
 ```sh
-php composer.phar require jgswift/observr:0.1.*
+php composer.phar require jgswift/observr:0.2.*
 ```
 
 Install via composer.json using [composer](https://getcomposer.org/):
 ```json
 {
     "require": {
-        "jgswift/observr": "0.1.*"
+        "jgswift/observr": "0.2.*"
     }
 }
 ```
@@ -27,7 +31,6 @@ Install via composer.json using [composer](https://getcomposer.org/):
 ## Dependency
 
 * php 5.5+
-* [jgswift/qtil](http://github.com/jgswift/qtil) - general utility library
 
 ## Usage
 
@@ -73,13 +76,15 @@ $foo->setState("bar",$event)
 var_dump($event->canceled); // returns true
 ```
 
-### Done, Fail, Always
+### Success, Failure, Completed
 
-observr\Event also implements the observer pattern itself and can be used to conveniently observe event result.  The built-in events are *DONE*, *FAIL*, & *ALWAYS*
+observr\Event also implements the observer pattern itself and can be used to 
+conveniently observe event result.  The built-in events are ```COMPLETE```, ```FAILURE```, ```SUCCESS```, and ```CANCEL```
 
-* DONE is notified when all observers fire successfully
-* FAIL is notified when any observer cancels the event using observr\Event->cancel()
-* ALWAYS is notified every time the state is changed
+* ```COMPLETE``` is notified when all observers fire without interruption
+* ```FAILURE``` is notified when any observer throws an exception, ```COMPLETE``` is not fired
+* ```SUCCESS``` is notified every time the state is changed successfully after completion
+* ```CANCEL``` is notifier when any observer invokes cancellation, ```COMPLETE``` is still fired in this case
 
 ```php
 <?php
@@ -90,33 +95,50 @@ class Foo
 
 $foo = new Foo;
 $foo->attach("bar",function($sender,$e) {
-    return 1;
+    // success with no cancellation or errors
 });
 
 $foo->attach("baz",function($sender,$e) {
-    $e->cancel(); // cancels the event, therein firing FAIL
+    $e->cancel(); // cancels the event
+});
+
+$foo->attach("fizz",function($sender,$e) {
+    throw new \Exception; // causes fault
 });
 
 $event = new observr\Event($foo);
-$event->attach(observr\Event::DONE,function() {
-    echo 'DONE';
-});
-$event->attach(observr\Event::FAIL,function() {
-    echo 'FAIL';
-});
-$event->attach(observr\Event::ALWAYS,function() {
-    echo 'ALWAYS';
+
+$event->attach(observr\Event::COMPLETE,function() {
+    echo 'COMPLETE';
 });
 
-$foo->setState("bar",$event)
-// returns ...
-// DONE
-// ALWAYS
+$event->attach(observr\Event::FAILURE,function() {
+    echo 'FAILURE'
+});
 
-$foo->setState("baz",$event)
-// returns ...
-// FAIL
-// ALWAYS
+$event->attach(observr\Event::CANCELED,function() {
+    echo 'CANCELED';
+});
+
+$event->attach(observr\Event::SUCCESS,function() {
+    echo 'SUCCESS';
+});
+
+$foo->setState("bar",$event);
+// invokes ...
+// COMPLETE
+// SUCCESS
+
+
+$foo->setState("baz",$event);
+// invokes ...
+// COMPLETE
+// CANCEL
+
+$foo->setState("fizz",$event);
+// invokes ...
+// FAILURE
+
 ```
 
 In this example, observr\Event is assigned all 3 built-in observers
@@ -124,18 +146,18 @@ In this example, observr\Event is assigned all 3 built-in observers
 Setting $foo state to "bar" successfully completes and notifies both *DONE* and *ALWAYS*
 Using the same observr\Event, setting $foo state to "baz" fails to complete and notifies *FAIL* and ALWAYS*
 
-### Source
+### Emitter
 
-Source is a standalone subject implementation for events you need to encapsulate
+Emitter is a standalone subject implementation for events you need to encapsulate individually
 
-#### Combining Source Events
+#### Combining Emitters
 
 ```php
 class Button {
     function __construct() {
-        $this->click = new observr\Source('click');
-        $this->mouseup = new observr\Source('mouseup');
-        $this->mousedown = new observr\Source('mousedown');
+        $this->click = new observr\Emitter('click');
+        $this->mouseup = new observr\Emitter('mouseup');
+        $this->mousedown = new observr\Emitter('mousedown');
     }
 }
 

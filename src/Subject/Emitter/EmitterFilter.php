@@ -1,10 +1,10 @@
 <?php
-namespace observr\Source {
-    use qtil;
-    use observr;
+namespace observr\Subject\Emitter {
+    use observr\Event as Event;
+    use observr\Subject\Emitter\EmitterInterface as EmitterInterface;
+    use observr\Subject\FixtureInterface as FixtureInterface;
     
-    class Filter {
-        use qtil\Executable;
+    class EmitterFilter {
         
         /**
          * Reference to primary source emitter
@@ -29,7 +29,7 @@ namespace observr\Source {
          * @param observr\Source $source
          * @param callable $callable
          */
-        public function __construct(observr\Source $source, callable $callable) {
+        public function __construct(EmitterInterface $source, callable $callable) {
             $this->source = $source;
             $this->callable = $callable;
         }
@@ -41,7 +41,7 @@ namespace observr\Source {
          */
         public function execute($subject, $e = null) {
             if(is_null($e)) {
-                $e = new observr\Event($subject);
+                $e = new Event();
             }
             
             $callable = $this->callable;
@@ -49,8 +49,8 @@ namespace observr\Source {
             if($callable($subject, $e)) {
                 $this->source->emit($e);
 
-                if(method_exists($subject, 'setState')) {
-                    $subject->setState($this->source->name, $e);
+                if($subject instanceof FixtureInterface) {
+                    $subject->setState($this->source->getName(), $e);
                 }
 
                 foreach($this->filters as $map) {
@@ -64,7 +64,7 @@ namespace observr\Source {
          * @param \observr\Source\Filter $filter
          * @return \observr\Source\Filter
          */
-        public function merge(Filter $filter) {
+        public function merge(EmitterFilter $filter) {
             $this->filters[] = $filter;
             
             return $this;
@@ -76,7 +76,7 @@ namespace observr\Source {
          * @return \observr\Source\Map
          */
         public function map(callable $callable) {
-            return new Map($this->source, $callable);
+            return new EmitterMap($this->source, $callable);
         }
         
         /**
@@ -85,7 +85,15 @@ namespace observr\Source {
          * @return \observr\Source\Filter
          */
         public function filter(callable $callable) {
-            return new Filter($this->source, $callable);
+            return new EmitterFilter($this->source, $callable);
+        }
+        
+        /**
+         * Callable filter
+         * @return mixed
+         */
+        public function __invoke() {
+            return call_user_func_array([$this,'execute'],func_get_args());
         }
     }
 }

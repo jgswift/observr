@@ -1,27 +1,23 @@
 <?php
 namespace observr {
-    use qtil;
+    use observr\Subject\SubjectAccessTrait as SubjectAccessTrait;
+    use observr\Subject\SubjectInterface as SubjectInterface;
     
-    class Collection extends qtil\Collection {
-        use Subject;
+    class Collection implements \ArrayAccess, SubjectInterface {
+        use SubjectAccessTrait;
         
         /**
-         * Helper method to reduce code duplication
-         * @param string $event
-         * @param array $args
-         * @return boolean
+         * Locally store array data
+         * @var array 
          */
-        private function trigger($event, array $args = []) {
-            if($this->hasObservers($event)) { // CHECK FOR OBSERVERS
-                $e = new Event($this,$args);
-                
-                $this->setState($event, $e);
-                if($e->canceled) {
-                    return false; // EVENT CANCELLED TRIGGER
-                }
-            }
-            
-            return true; // ASSUME VALID
+        protected $data;
+        
+        /**
+         * Default collection constructor
+         * @param array $data
+         */
+        public function __construct(array $data = []) {
+            $this->data = $data;
         }
         
         /**
@@ -34,7 +30,7 @@ namespace observr {
                 return;
             }
             
-            return parent::offsetGet($offset);
+            return $this->data[$offset];
         }
         
         /**
@@ -50,7 +46,7 @@ namespace observr {
                 return;
             }
             
-            parent::offsetSet($offset, $value);
+            return $this->data[$offset] = $value;
         }
         
         /**
@@ -64,7 +60,7 @@ namespace observr {
                 return false;
             }
             
-            return parent::offsetExists($offset);
+            return isset($this->data[$offset]);
         }
         
         /**
@@ -78,7 +74,9 @@ namespace observr {
                 return;
             }
 
-            parent::offsetUnset($offset);
+            if(isset($this->data[$offset])) {
+                unset($this->data[$offset]);
+            }
         }
     }
 }

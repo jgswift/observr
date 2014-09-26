@@ -1,23 +1,13 @@
 <?php
-namespace observr {
-    use qtil;
+namespace observr\Subject\Emitter {
+    use observr\Event as Event;
     
-    class Source implements qtil\Interfaces\Nameable {
-        use Subject, qtil\Executable;
-        
+    trait EmitterTrait {
         /**
-         * Event name
+         * Locally stores event name
          * @var string
          */
-        public $name;
-
-        /**
-         * Default event source constructor
-         * @param string $name
-         */
-        function __construct($name) {
-            $this->name = $name;
-        }
+        protected $name;
         
         /**
          * Explicit retrieve of name
@@ -28,13 +18,23 @@ namespace observr {
         }
         
         /**
+         * Update emitter name
+         * @param string $name
+         */
+        public function setName($name) {
+            if(is_string($name)) {
+                $this->name = $name;
+            } else {
+                throw new \InvalidArgumentException();
+            }
+        }
+        
+        /**
          * Emits event to self and returns event
          * @return \observr\Event
          */
-        public function emit() {
-            $this->setState('on', new Event($this));
-            
-            return new Event($this, func_get_args());
+        public function emit($e=null) {
+            return $this->setState('on',$e);
         }
         
         /**
@@ -69,7 +69,7 @@ namespace observr {
          * @return \observr\Source\Map
          */
         public function map(callable $callable) {
-            return new Source\Map($this, $callable);
+            return new EmitterMap($this, $callable);
         }
         
         /**
@@ -78,15 +78,15 @@ namespace observr {
          * @return \observr\Source\Filter
          */
         public function filter(callable $callable) {
-            return new Source\Filter($this, $callable);
+            return new EmitterFilter($this, $callable);
         }
         
         /**
-         * Alias for emit
-         * @see emit
+         * Stringify emitter to get name
+         * @return string
          */
-        public function execute($sender) {
-            $this->emit();
+        public function __toString() {
+            return $this->getName();
         }
     }
 }

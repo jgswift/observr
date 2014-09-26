@@ -1,106 +1,22 @@
 <?php
 namespace observr {
-    /**
-     * Event class
-     * @package observr
-     */
-    class Event extends \ArrayObject {
-        use Subject;
-
-        /**
-         * Canceled variable, use to check if event is canceled
-         * @var boolean 
-         */
-        public $canceled = false;
+    use observr\Event\EventInterface as EventInterface;
+    use observr\Event\EventAwareInterface as EventAwareInterface;
+    use observr\Subject\SubjectInterface as SubjectInterface;
+    use observr\Event\EventTrait as EventTrait;
+    use observr\Event\EventAwareTrait as EventAwareTrait;
+    use observr\Subject\SubjectTrait as SubjectTrait;
+    
+    class Event extends \ArrayObject implements EventInterface, EventAwareInterface, SubjectInterface {
+        use EventTrait, EventAwareTrait, SubjectTrait;
         
-        /**
-         * Specified by constructor, this object is what originated the event
-         * @var mixed
-         */
-        public $sender = null;
+        const FAILURE = 'fail';
         
-        /**
-         * Event name, transient depending on setState
-         * @var string
-         */
-        public $name = null;
-
-        const DONE = 'done';
-        const FAIL = 'fail';
-        const ALWAYS = 'always';
-
-        /**
-         * Constructor for Event
-         * @param mixed $sender
-         * @param array $arguments
-         */
-        function __construct($sender,$arguments = []) {
-            
-            $this->sender = $sender;
-
-            $nArgs = func_num_args();
-            if( $nArgs > 2 ) {
-                $arguments = func_get_args();
-                array_shift( $arguments );
-            }
-
-            parent::__construct($arguments);
-        }
-
-        /**
-         * Shortcut method to attach closure to done event
-         * @param callable $callable
-         */
-        function done(callable $callable) {
-            $this->attach(self::DONE, $callable);
-        }
-
-        /**
-         * Shortcut method to attach closure to fail event
-         * @param callable $callable
-         */
-        function fail(callable $callable) {
-            $this->attach(self::FAIL, $callable);
-        }
-
-        /**
-         * Shortcut method to attach closure to always event
-         * @param callable $callable
-         */
-        function always(callable $callable) {
-            $this->attach(self::ALWAYS, $callable);
-        }
-
-        /**
-         * Cancels event
-         * @param mixed $e
-         * @return boolean
-         */
-        function cancel($e = null) {
-            if(is_callable($e)) {
-                return $this->canceled = $e();
-            }
-
-            $this->canceled = true;
-            return false;
-        }
+        const COMPLETE = 'complete';
+        const DONE = 'complete';
         
-        /**
-         * Helper method to attach additional mediator
-         * @param mixed $source
-         */
-        function trigger($source) {
-            if(Listener::hasObservers($this,[self::FAIL,self::DONE,self::ALWAYS])) {
-                $xe = new self($source);
-                if($this->canceled) {
-                    $this->setState(self::FAIL, $xe);
-                } else {
-                    $this->setState(self::DONE, $xe);
-                }
-
-                $this->setState(self::ALWAYS, $xe);
-            }
-        }
+        const CANCEL = 'cancel';
+        
+        const SUCCESS = 'success';
     }
 }
-

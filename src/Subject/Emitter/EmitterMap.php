@@ -1,10 +1,9 @@
 <?php
-namespace observr\Source {
-    use qtil;
-    use observr;
+namespace observr\Subject\Emitter {
+    use observr\Event as Event;
+    use observr\Subject\FixtureInterface as FixtureInterface;
     
-    class Map extends Filter {
-        use qtil\Executable;
+    class EmitterMap extends EmitterFilter {
         
         /**
          * Mapping operation
@@ -13,7 +12,7 @@ namespace observr\Source {
          */
         public function execute($subject, $e = null) {
             if(is_null($e)) {
-                $e = new observr\Event($subject);
+                $e = new Event();
             }
             
             $callable = $this->callable;
@@ -22,10 +21,10 @@ namespace observr\Source {
             
             $callable($subject, $e);
             
-            if(method_exists($subject, 'setState')) {
-                $subject->setState($this->source->name, $e);
+            if($subject instanceof FixtureInterface) {
+                $subject->setState($this->source->getName(), $e);
             }
-            
+
             foreach($this->filters as $map) {
                 $map->execute($subject, $e);
             }

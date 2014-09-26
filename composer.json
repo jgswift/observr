@@ -1,6 +1,6 @@
 {
     "name": "jgswift/observr",
-    "description": "PHP 5.5+ observer pattern using traits",
+    "description": "PHP 5.5+ event layer",
     "keywords": ["php","magic","observer","trait"],
     "license": "MIT",
     "type": "library",
@@ -13,8 +13,7 @@
         }
     ],    
     "require": {
-        "php": ">=5.5",
-        "jgswift/qtil": "0.1.*"
+        "php": ">=5.5"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*",
