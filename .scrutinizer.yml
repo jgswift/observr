@@ -1,3 +1,4 @@
+# .scrutinizer.yml
 build:
     environment:
         php:
