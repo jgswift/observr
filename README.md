@@ -34,14 +34,16 @@ Install via composer.json using [composer](https://getcomposer.org/):
 
 ## Usage
 
-### Basic example
+### Subject
 
-observr is a lightweight php trait that loosely implements the observer pattern
+The Subject layer is a flexible interface/trait combination that provides a generic observer pattern implementation.
 
-The following is a minimal example
+#### Basic example
+
 ```php
-<?php
-class Foo
+use observr\Subject\SubjectInterface as SubjectInterface;
+
+class Foo implements SubjectInterface
 {
     use observr\Subject;
 }
@@ -54,41 +56,78 @@ $foo->attach("bar",function($sender,$e) {
 var_dump($foo->setState("bar")); // returns "baz"
 ```
 
-### State Change
+#### State Change
 
-Use observr\Event to define pass-thru variables or for event cancellation.  You can implement custom pass-thrus by inheriting observr\Event
+```observr\Event``` delivers a combination ```EventInterface``` and ```EventAwareInterface``` to the observing callbacks
+and can be used to define pass-thru state variables.
 
 ```php
-<?php
-class Foo
+class Foo implements SubjectInterface
 {
     use observr\Subject;
 }
 
 $foo = new Foo;
 $foo->attach("bar",function($sender,$e) {
-    $e->cancel();
+    $e->cancel();  // manual cancellation
 });
 
 $event = new observr\Event($foo);
 $foo->setState("bar",$event)
 
-var_dump($event->canceled); // returns true
+var_dump($event->isCanceled()); // returns true
 ```
 
-### Success, Failure, Completed
+To implement a custom event interface just inherit ```observr\Event``` or implement ```EventInterface``` and ```EventAwareInterface```
 
-observr\Event also implements the observer pattern itself and can be used to 
-conveniently observe event result.  The built-in events are ```COMPLETE```, ```FAILURE```, ```SUCCESS```, and ```CANCEL```
+#### EventInterface (abbr.)
 
-* ```COMPLETE``` is notified when all observers fire without interruption
-* ```FAILURE``` is notified when any observer throws an exception, ```COMPLETE``` is not fired
-* ```SUCCESS``` is notified every time the state is changed successfully after completion
-* ```CANCEL``` is notifier when any observer invokes cancellation, ```COMPLETE``` is still fired in this case
+State status and exception container
 
 ```php
-<?php
-class Foo
+interface EventInterface {
+    public function isComplete();
+
+    public function isSuccess();
+
+    public function isFailure();
+
+    public function isCanceled();
+
+    public function getException();
+
+    public function setException(\Exception $exception);
+}
+```
+
+#### EventAwareInterface (abbr.)
+
+Performs state changes for ```EventInterface```
+
+```php
+interface EventAwareInterface {
+    public function cancel(EventInterface $event = null);
+
+    public function complete(EventInterface $event);
+
+    public function fail(EventInterface $event);
+
+    public function succeed(EventInterface $event);
+}
+```
+
+#### Success, Failure, Complete, Cancel
+
+```observr\Event``` also implements the observer pattern itself and can be used to
+ validate event results.  The validation constants are ```COMPLETE```, ```FAILURE```, ```SUCCESS```, and ```CANCEL```
+
+* ```COMPLETE``` is notified when all observers fire without failure
+* ```FAILURE``` is notified when any observer throws an exception
+* ```SUCCESS``` is notified every time the state is changed without failure or cancellation
+* ```CANCEL``` is notifier when any observer invokes cancellation
+
+```php
+class Foo implements SubjectInterface
 {
     use observr\Subject;
 }
@@ -124,31 +163,65 @@ $event->attach(observr\Event::SUCCESS,function() {
     echo 'SUCCESS';
 });
 
-$foo->setState("bar",$event);
+$foo->setState("bar",$event); // everything worked!
 // invokes ...
 // COMPLETE
 // SUCCESS
 
 
-$foo->setState("baz",$event);
+$foo->setState("baz",$event); // manual cancellation
 // invokes ...
 // COMPLETE
 // CANCEL
 
-$foo->setState("fizz",$event);
+$foo->setState("fizz",$event); // throws exception
 // invokes ...
 // FAILURE
 
 ```
-
-In this example, observr\Event is assigned all 3 built-in observers
-
-Setting $foo state to "bar" successfully completes and notifies both *DONE* and *ALWAYS*
-Using the same observr\Event, setting $foo state to "baz" fails to complete and notifies *FAIL* and ALWAYS*
-
 ### Emitter
 
-Emitter is a standalone subject implementation for events you need to encapsulate individually
+Emitter is a Subject where events are exposed into individual objects
+
+#### Basic Emitter
+
+```php
+class Button implements SubjectInterface {
+    use observr\Subject;
+}
+
+$button = new Button;
+
+$click = new observr\Emitter('click');
+
+$button->setState($click, function($sender,$e) {
+    echo 'CLICKED!';
+});
+
+$click($button); // prints 'CLICKED'!
+```
+
+#### EmitterInterface (abbr.)
+
+```php
+interface EmitterInterface extends SubjectInterface {
+    public function getName();
+
+    public function emit($e = null);
+
+    public function on(callable $callable);
+
+    public function bind(callable $callable);
+
+    public function unbind(callable $callable);
+
+    public function map(callable $callable);
+
+    public function filter(callable $callable);
+
+    public function __toString();
+}
+```
 
 #### Combining Emitters
 
@@ -197,6 +270,8 @@ $sending($button); // triggers click and changes button text to "Sending..."
 
 A stream provides an easy way to wrap around multiple subjects at once and listen to many events.
 
+#### Basic
+
 ```php
 $bob = new User
 $john = new User;
@@ -223,6 +298,26 @@ $john->setState('login');
 $stream->close();
 
 var_dump($c); // 2
+```
+
+#### StreamInterface (abbr.)
+
+```php
+interface StreamInterface {
+    public function close();
+
+    public function getSubjects();
+
+    public function isOpen();
+
+    public function open();
+
+    public function watch($pointer);
+
+    public function unwatch($pointer);
+
+    public function isWatching($pointer);
+}
 ```
 
 ## Related Package(s)
