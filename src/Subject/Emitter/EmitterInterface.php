@@ -8,7 +8,7 @@ namespace observr\Subject\Emitter {
         /**
          * Emit state
          */
-        public function emit();
+        public function emit($e = null);
         
         /**
          * Alias for bind

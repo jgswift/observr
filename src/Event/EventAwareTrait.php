@@ -5,6 +5,16 @@ namespace observr\Event {
     
     trait EventAwareTrait {
         /**
+         * @see \observr\Subject\FixtureInterface
+         */
+        abstract function isWatched();
+        
+        /**
+         * @see \observr\Subject\FixtureInterface
+         */
+        abstract function setState();
+        
+        /**
          * Completes event
          */
         public function complete(EventInterface $event) {
@@ -54,6 +64,7 @@ namespace observr\Event {
         
         protected function setFixtureState(EventInterface $event) {
             if($this instanceof FixtureInterface && 
+               $event instanceof Event &&
                $this->isWatched()) {
                 $this->setState($event->state, $event);
             }

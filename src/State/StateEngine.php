@@ -37,7 +37,7 @@ namespace observr\State {
          * Retrieve listener for object
          * Creates listener if none exists
          * @param mixed $object
-         * @param string $name
+         * @param string|array|null $name
          * @return \observr\State\Listener\AggregateListener
          */
         public function listener($object,$name = null) {

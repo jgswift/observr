@@ -8,6 +8,12 @@ namespace observr\State {
     use observr\State\Listener\ListenerInterface as ListenerInterface;
     use observr\State\Notifier\NotifierAwareInterface as NotifierAwareInterface;
     
+    /**
+     * StateStream
+     * 
+     * @method null _attach() _attach($name, callable $observer)
+     * @method null _detach() _detach($name, callable $observer = null)
+     */
     class StateStream implements StreamInterface, FixtureInterface, StreamSubjectInterface {
         use SubjectTrait {
             SubjectTrait::attach as _attach;
@@ -34,7 +40,7 @@ namespace observr\State {
         
         /**
          * Creates event stream
-         * @param string|ListenerInterface $listener
+         * @param string|array|\observr\State\Listener\ListenerInterface $listener
          * @throws \InvalidArgumentException
          */
         function __construct($listener) {

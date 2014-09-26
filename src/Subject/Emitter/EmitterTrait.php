@@ -10,17 +10,17 @@ namespace observr\Subject\Emitter {
         /**
          * @see \observr\Subject\FixtureInterface
          */
-        abstract function setState($name,$e=null);
+        abstract function setState();
         
         /**
          * @see \observr\Subject\SubjectInterface
          */
-        abstract function attach($name,callable $observer);
+        abstract function attach();
         
         /**
          * @see \observr\Subject\SubjectInterface
          */
-        abstract function detach($name,callable $observer = null);
+        abstract function detach();
         
         /**
          * Explicit retrieve of name
