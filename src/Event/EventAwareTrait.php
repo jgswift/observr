@@ -8,7 +8,10 @@ namespace observr\Event {
          * Completes event
          */
         public function complete(EventInterface $event) {
-            $event->state = Event::COMPLETE;
+            if($event instanceof Event) {
+                $event->state = Event::COMPLETE;
+            }
+            
             $this->setFixtureState($event);
         }
         
@@ -16,7 +19,10 @@ namespace observr\Event {
          * Fails event
          */
         public function fail(EventInterface $event) {
-            $event->state = Event::FAILURE;
+            if($event instanceof Event) {
+                $event->state = Event::FAILURE;
+            }
+            
             $this->setFixtureState($event);
         }
         
@@ -27,7 +33,11 @@ namespace observr\Event {
             if(is_null($event)) {
                 throw new EventCancelException();
             }
-            $event->state = Event::CANCEL;
+            
+            if($event instanceof Event) {
+                $event->state = Event::CANCEL;
+            }
+            
             $this->setFixtureState($event);
         }
         
@@ -35,7 +45,10 @@ namespace observr\Event {
          * Succeeds event
          */
         public function succeed(EventInterface $event) {
-            $event->state = Event::SUCCESS;
+            if($event instanceof Event) {
+                $event->state = Event::SUCCESS;
+            }
+            
             $this->setFixtureState($event);
         }
         

@@ -8,7 +8,7 @@ namespace observr\Subject\Emitter {
         
         /**
          * Reference to primary source emitter
-         * @var observr\Source 
+         * @var \observr\Subject\Emitter\EmitterInterface 
          */
         protected $source;
         

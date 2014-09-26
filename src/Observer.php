@@ -3,13 +3,13 @@ namespace observr {
     class Observer {
         /**
          * Facade engine instance
-         * @var observr\State\StateEngine 
+         * @var \observr\State\StateEngine 
          */
         private static $engine;
         
         /**
          * Retrieve engine facade
-         * @return observr\State\StateEngine 
+         * @return \observr\State\StateEngine 
          */
         public static function getEngine() {
             if(!isset(self::$engine)) {

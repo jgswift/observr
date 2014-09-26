@@ -1,13 +1,26 @@
 <?php
 namespace observr\Subject\Emitter {
-    use observr\Event as Event;
-    
     trait EmitterTrait {
         /**
          * Locally stores event name
          * @var string
          */
         protected $name;
+        
+        /**
+         * @see \observr\Subject\FixtureInterface
+         */
+        abstract function setState($name,$e=null);
+        
+        /**
+         * @see \observr\Subject\SubjectInterface
+         */
+        abstract function attach($name,callable $observer);
+        
+        /**
+         * @see \observr\Subject\SubjectInterface
+         */
+        abstract function detach($name,callable $observer = null);
         
         /**
          * Explicit retrieve of name
