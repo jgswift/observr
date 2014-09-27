@@ -181,7 +181,7 @@ $foo->setState("fizz",$event); // throws exception
 ```
 ### Emitter
 
-Emitter is a Subject where events are exposed into individual objects
+Emitters encapsulate a single event and may be used in conjunction with one or many Subject implementations.  Subject notifications are processed by Emitter ```__invoke```.
 
 #### Basic Emitter
 
