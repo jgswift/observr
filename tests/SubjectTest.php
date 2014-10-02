@@ -268,5 +268,25 @@ namespace observr\Tests {
             
             $this->assertEquals($match,$results);
         }
+        
+        function testEmitterBasic() {
+            $click = new observr\Emitter('click');
+            
+            $button = new Mock\Button;
+            
+            $c = 0;
+            
+            $button->attach($click, function($s,$e)use(&$c) {
+                $c++;
+            });
+            
+            $click->attach(function($s,$e)use(&$c) {
+                $c++;
+            });
+            
+            $click($button);
+            
+            $this->assertEquals(2,$c);
+        }
     }
 }

@@ -1,8 +1,6 @@
 <?php
 namespace observr\Subject\Emitter {
-    use observr\Subject\SubjectInterface as SubjectInterface;
-    
-    interface EmitterInterface extends SubjectInterface {
+    interface EmitterInterface {
         public function getName();
         
         /**

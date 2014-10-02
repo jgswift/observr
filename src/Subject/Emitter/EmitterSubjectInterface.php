@@ -1,8 +1,8 @@
 <?php
-namespace observr\Stream {
+namespace observr\Subject\Emitter {
     use observr\Subject\FixtureInterface as FixtureInterface;
     
-    interface StreamSubjectInterface extends FixtureInterface {
+    interface EmitterSubjectInterface extends FixtureInterface {
         /**
          * Attach observer to subject
          * @param callable $observer

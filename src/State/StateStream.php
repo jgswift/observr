@@ -1,7 +1,8 @@
 <?php
 namespace observr\State {
     use observr\Subject\FixtureInterface as FixtureInterface;
-    use observr\Stream\StreamSubjectInterface as StreamSubjectInterface;
+    use observr\Subject\FixtureTrait as FixtureTrait;
+    use observr\Subject\Emitter\EmitterSubjectInterface as EmitterSubjectInterface;
     use observr\Subject\SubjectTrait as SubjectTrait;
     use observr\Stream\StreamInterface as StreamInterface;
     use observr\Observer as Observer;
@@ -14,8 +15,8 @@ namespace observr\State {
      * @method null _attach($name, callable $observer)
      * @method null _detach($name, callable $observer = null)
      */
-    class StateStream implements StreamInterface, FixtureInterface, StreamSubjectInterface {
-        use SubjectTrait {
+    class StateStream implements StreamInterface, FixtureInterface, EmitterSubjectInterface {
+        use SubjectTrait, FixtureTrait {
             SubjectTrait::attach as _attach;
             SubjectTrait::detach as _detach;
         }

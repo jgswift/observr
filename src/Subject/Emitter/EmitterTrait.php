@@ -1,5 +1,7 @@
 <?php
 namespace observr\Subject\Emitter {
+    use observr\Event;
+    
     trait EmitterTrait {
         /**
          * Locally stores event name
@@ -15,12 +17,12 @@ namespace observr\Subject\Emitter {
         /**
          * @see \observr\Subject\SubjectInterface
          */
-        abstract function attach($name, callable $observer);
+        abstract function attach(callable $observer);
         
         /**
          * @see \observr\Subject\SubjectInterface
          */
-        abstract function detach($name, callable $observer = null);
+        abstract function detach(callable $observer = null);
         
         /**
          * Explicit retrieve of name
@@ -100,6 +102,29 @@ namespace observr\Subject\Emitter {
          */
         public function __toString() {
             return $this->getName();
+        }
+        
+        /**
+         * Performs filtering operation
+         * @param mixed $subject
+         * @param observr\Event $e
+         */
+        public function execute($subject, $e = null) {
+            if(is_null($e)) {
+                $e = new Event();
+            }
+            
+            $this->emit($e);
+            
+            $subject->setState($this->name,$e);
+        }
+        
+        /**
+         * Alias for execution
+         * @return mixed
+         */
+        public function __invoke() {
+            return call_user_func_array([$this,'execute'],func_get_args());
         }
     }
 }

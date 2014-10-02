@@ -2,9 +2,10 @@
 namespace observr {
     use observr\Subject\SubjectAccessTrait as SubjectAccessTrait;
     use observr\Subject\SubjectInterface as SubjectInterface;
+    use observr\Subject\FixtureTrait as FixtureTrait;
     
     class Collection implements \ArrayAccess, SubjectInterface {
-        use SubjectAccessTrait;
+        use SubjectAccessTrait, FixtureTrait;
         
         /**
          * Locally store array data
