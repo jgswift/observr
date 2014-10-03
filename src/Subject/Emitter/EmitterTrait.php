@@ -1,7 +1,5 @@
 <?php
 namespace observr\Subject\Emitter {
-    use observr\Event;
-    
     trait EmitterTrait {
         /**
          * Locally stores event name
@@ -102,21 +100,6 @@ namespace observr\Subject\Emitter {
          */
         public function __toString() {
             return $this->getName();
-        }
-        
-        /**
-         * Performs filtering operation
-         * @param mixed $subject
-         * @param observr\Event $e
-         */
-        public function execute($subject, $e = null) {
-            if(is_null($e)) {
-                $e = new Event();
-            }
-            
-            $this->emit($e);
-            
-            $subject->setState($this->name,$e);
         }
         
         /**

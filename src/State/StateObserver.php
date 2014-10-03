@@ -65,7 +65,6 @@ namespace observr\State {
                     $event->complete($event);
                     $event->cancel($event);
                 } else {
-                    
                     $event->fail($event);
                     $event->setException($exception);
                 }

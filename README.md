@@ -31,6 +31,7 @@ Install via composer.json using [composer](https://getcomposer.org/):
 ## Dependency
 
 * php 5.5+
+* [react/promise](https://github.com/reactphp/promise)
 
 ## Usage
 
@@ -181,7 +182,7 @@ $foo->setState("fizz",$event); // throws exception
 ```
 ### Emitter
 
-Emitters encapsulate a single event and may be used in conjunction with one or many Subject implementations.  Subject notifications are processed by Emitter ```__invoke```.
+Emitter is a Subject where events are exposed into individual objects
 
 #### Basic Emitter
 

@@ -6,69 +6,6 @@ namespace observr\Tests {
      * @package observr
      */
     class SubjectTest extends ObservrTestCase {
-        function testCombinedEventSource() {
-            $click = new observr\Emitter('click');
-            $mouseup = new observr\Emitter('mouseup');
-            $mousedown = new observr\Emitter('mousedown');
-            
-            $combined = $click->map(function($sender, $e) {
-                return $e['x'] = 'Click';
-            })->merge($mousedown->map(function($sender,$e) {
-                return $e['x'] = 'Mousedown';
-            }))->merge($mouseup->map(function($sender,$e) {
-                return $e['x'] = 'Mouseup';
-            }));
-            
-            $button = new Mock\Button;
-            
-            $c = 0;
-            $button->attach($click,function($sender,$e)use(&$c) {
-                $this->assertEquals('Click',$e['x']);
-                $c++;
-            });
-            
-            $button->attach($mouseup,function($sender,$e)use(&$c) {
-                $this->assertEquals('Mouseup',$e['x']);
-                $c++;
-            }); 
-            
-            $button->attach($mousedown,function($sender,$e)use(&$c) {
-                $this->assertEquals('Mousedown',$e['x']);
-                $c++;
-            }); 
-            
-            $combined($button);
-            
-            $this->assertEquals(3,$c);
-        }
-        
-        function testEventFilter() {
-            $click = new observr\Emitter('click');
-            
-            $doOK = $click
-              ->filter(function($button,$e) {
-                if($button instanceof Mock\Button) {
-                    return true;
-                }
-                
-                return false;
-            })->map(function($button,$e) {
-                $button->value = 'Ok';
-            });
-            
-            $button = new Mock\Button;
-            
-            $c = 0;
-            $button->attach($click,function($sender,$e)use(&$c) {
-                $c++;
-            });
-            
-            $doOK($button);
-            
-            $this->assertEquals(1,$c);
-            $this->assertEquals('Ok',$button->value);
-        }
-                
         function testSubjectDetach() {
             $user = new Mock\User;
             
@@ -269,24 +206,45 @@ namespace observr\Tests {
             $this->assertEquals($match,$results);
         }
         
-        function testEmitterBasic() {
-            $click = new observr\Emitter('click');
+        function testEmptyEventAfter() {
+            $user = new Mock\User;
             
-            $button = new Mock\Button;
+            $e = new observr\Event($user);
             
-            $c = 0;
+            $match = [
+                'complete',
+                'success',
+                'complete',
+                'success',
+                'complete',
+                'success'
+            ];
             
-            $button->attach($click, function($s,$e)use(&$c) {
-                $c++;
+            $results = [];
+            
+            $e->attach(observr\Event::COMPLETE,function()use(&$results) {
+                $results[] = 'complete';
             });
             
-            $click->attach(function($s,$e)use(&$c) {
-                $c++;
+            $e->attach(observr\Event::CANCEL,function()use(&$results) {
+                $results[] = 'canceled';
             });
             
-            $click($button);
+            $e->attach(observr\Event::FAILURE,function()use(&$results) {
+                $results[] = 'failure';
+            });
             
-            $this->assertEquals(2,$c);
+            $e->attach(observr\Event::SUCCESS,function()use(&$results) {
+                $results[] = 'success';
+            });
+            
+            $user->setState('editprofile',$e);
+            
+            $user->setState('logout',$e);
+            
+            $user->setState('login',$e);
+            
+            $this->assertEquals($match,$results);
         }
     }
 }

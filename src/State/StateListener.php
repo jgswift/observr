@@ -132,6 +132,7 @@ namespace observr\State {
          */
         public function notify(EventAwareInterface $event) {
             $results = [];
+            
             if($this->isWatched()) {
                 $observers = $this->getObservers();
                 unset($this->observers); // prevent recursion
