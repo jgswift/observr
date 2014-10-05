@@ -20,5 +20,15 @@ namespace observr\Event {
          * Succeed event
          */
         public function succeed(EventInterface $event);
+        
+        /**
+         * Retrieve sender
+         */
+        public function getSender();
+        
+        /**
+         * Update sender
+         */
+        public function setSender($sender);
     }
 }

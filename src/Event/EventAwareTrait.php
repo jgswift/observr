@@ -5,6 +5,11 @@ namespace observr\Event {
     
     trait EventAwareTrait {
         /**
+         * store sender
+         * @var mixed
+         */
+        protected $sender = null;
+        /**
          * @see \observr\Subject\FixtureInterface
          */
         abstract function isWatched();
@@ -13,6 +18,18 @@ namespace observr\Event {
          * @see \observr\Subject\FixtureInterface
          */
         abstract function setState($state, $e = null);
+        
+        /**
+         * Retrieve sender
+         * @return mixed
+         */
+        public function getSender() {
+            return $this->sender;
+        }
+        
+        public function setSender($sender) {
+            $this->sender = $sender;
+        }
         
         /**
          * Completes event

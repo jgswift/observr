@@ -58,7 +58,11 @@ namespace observr\State {
         public function trigger(EventAwareInterface $event, callable $callable = null) {
             try {
                 if(is_callable($callable)) {
-                    return call_user_func_array($callable, [$this->subject, $event]);
+                    $sender = $event->getSender();
+                    if(empty($sender)) {
+                        $sender = $this->subject;
+                    }
+                    return call_user_func_array($callable, [$sender, $event]);
                 }
             } catch(\Exception $exception) {
                 if($exception instanceof EventCancelException) {

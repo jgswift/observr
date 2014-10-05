@@ -52,7 +52,7 @@ namespace observr\Subject {
         
         /**
          * Handles promise rejection
-         * @param type $reason
+         * @param string $reason
          */
         public function fail($reason = null) {
             $this->promise();
@@ -62,7 +62,7 @@ namespace observr\Subject {
         
         /**
          * Hanldes promise progress
-         * @param type $update
+         * @param integer $update
          */
         public function progress($update = null) {
             $this->promise();

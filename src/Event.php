@@ -19,5 +19,20 @@ namespace observr {
         const CANCEL = 'cancel';
         
         const SUCCESS = 'success';
+               
+        function __construct($sender, array $args = null) {
+            if(is_array($sender)) {
+                $args = $sender;
+                $sender = null;
+            }
+            
+            if(!empty($sender)) {
+                $this->sender = $sender;
+            }
+            
+            if(is_array($args)) {
+                $this->exchangeArray($args);
+            }
+        }
     }
 }

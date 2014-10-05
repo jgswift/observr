@@ -13,7 +13,7 @@ namespace observr\Subject {
          */
         protected function trigger($event, array $args = []) {
             if($this->isWatched()) { // CHECK FOR OBSERVERS
-                $e = new Event($args);
+                $e = new Event($this, $args);
                 
                 $this->setState($event, $e);
                 if($e->isCanceled()) {

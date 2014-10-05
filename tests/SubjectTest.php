@@ -6,6 +6,21 @@ namespace observr\Tests {
      * @package observr
      */
     class SubjectTest extends ObservrTestCase {
+        function testSubjectSenderOverride() {
+            $user = new Mock\User;
+            
+            $button = new Mock\Button;
+            
+            $sender = null;
+            
+            $user->attach('login',function($s, $e = null)use(&$sender) {
+                $sender = $s;
+            });
+            
+            $user->setState('login',new observr\Event($button));
+            $this->assertInstanceOf('observr\Tests\Mock\Button',$sender);
+        }
+        
         function testSubjectDetach() {
             $user = new Mock\User;
             

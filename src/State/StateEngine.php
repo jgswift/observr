@@ -125,9 +125,9 @@ namespace observr\State {
          */
         public function setState($object, $name, $e=null) {
             if(is_null($e)) {
-                $e = new Event;
+                $e = new Event($object);
             } elseif(is_array($e)) {
-                $e = new Event($e);
+                $e = new Event($object, $e);
             }
             
             if(!is_array($name)) {

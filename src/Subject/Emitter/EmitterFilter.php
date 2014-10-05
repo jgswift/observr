@@ -41,7 +41,7 @@ namespace observr\Subject\Emitter {
          */
         public function execute($subject, $e = null) {
             if(is_null($e)) {
-                $e = new Event();
+                $e = new Event($subject);
             }
             
             $callable = $this->callable;
