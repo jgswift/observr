@@ -42,19 +42,17 @@ The Subject layer is a flexible interface/trait combination that provides a gene
 #### Basic example
 
 ```php
-use observr\Subject\SubjectInterface as SubjectInterface;
-
-class Foo implements SubjectInterface
+class User implements observr\SubjectInterface
 {
     use observr\Subject;
 }
 
-$foo = new Foo;
-$foo->attach("bar",function($sender,$e) {
-    return "baz";
+$user = new User;
+$user->attach("login",function($sender,$e) {
+    return "login successful";
 });
 
-var_dump($foo->setState("bar")); // returns "baz"
+var_dump($user->setState("login")); // returns "login successful"
 ```
 
 #### State Change
@@ -63,18 +61,13 @@ var_dump($foo->setState("bar")); // returns "baz"
 and can be used to define pass-thru state variables.
 
 ```php
-class Foo implements SubjectInterface
-{
-    use observr\Subject;
-}
-
-$foo = new Foo;
-$foo->attach("bar",function($sender,$e) {
+$user = new User;
+$user->attach("login",function($sender,$e) {
     $e->cancel();  // manual cancellation
 });
 
-$event = new observr\Event($foo);
-$foo->setState("bar",$event)
+$event = new observr\Event($user);
+$user->setState("login",$event)
 
 var_dump($event->isCanceled()); // returns true
 ```
@@ -115,6 +108,28 @@ interface EventAwareInterface {
 
     public function succeed(EventInterface $event);
 }
+```
+
+### Event Namespacing
+
+In order to handle events differently depending on package behavior it is possible to ```attach```/```detach``` with namespaces.
+
+```php
+$user = new User;
+            
+$user->attach('login',function($sender,$e) {
+    echo 'default login';
+});
+
+$user->attach('login.myNamespace',function($sender,$e) {
+    echo 'my custom login';
+});
+
+$user->setState('login'); // echo 'default login' & 'my custom login'
+
+$user->detach('login.myNamespace'); // removes only the namespaced handler
+
+$user->setState('login'); // echo 'default login'
 ```
 
 #### Success, Failure, Complete, Cancel

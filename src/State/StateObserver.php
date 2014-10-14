@@ -17,6 +17,13 @@ namespace observr\State {
          */
         private $name;
         
+        
+        /**
+         * Locally store observer namespace
+         * @var string
+         */
+        private $namespace;
+        
         /**
          * Locally stores observer validity
          * @var boolean
@@ -30,7 +37,18 @@ namespace observr\State {
          */
         public function __construct(FixtureInterface $subject, $name) {
             $this->subject = $subject;
-            $this->name = $name;
+            $this->parseName($name);
+            list($this->name, $this->namespace) = self::parseName($name);
+        }
+        
+        /**
+         * Helper method to parse provided name
+         * @param string $name
+         */
+        public static function parseName($name) {
+            $parts = explode('.',$name);
+            
+            return [array_shift($parts),implode('.',$parts)];
         }
         
         /**
@@ -47,6 +65,25 @@ namespace observr\State {
          */
         public function getName() {
             return $this->name;
+        }
+        
+        /**
+         * Retrieve qualified observer name
+         * @return string
+         */
+        public function getQualifiedName() {
+            if(empty($this->namespace)) {
+                return $this->name;
+            }
+            return $this->name.'.'.$this->namespace;
+        }
+        
+        /**
+         * Retrieve observer namespace
+         * @return string
+         */
+        public function getNamespace() {
+            return $this->namespace;
         }
         
         /**

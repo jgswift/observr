@@ -13,7 +13,7 @@ namespace observr {
          */
         public static function getEngine() {
             if(!isset(self::$engine)) {
-                self::$engine = new State\StateEngine;
+                self::$engine = new Stream\StreamEngine;
             }
             return self::$engine;
         }

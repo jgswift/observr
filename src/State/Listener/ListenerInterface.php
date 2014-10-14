@@ -18,12 +18,12 @@ namespace observr\State\Listener {
         /**
          * Add callable to Listener
          */
-        public function watch(callable $callable);
+        public function watch($name, callable $callable);
         
         /**
          * Remove callable from listener
          */
-        public function unwatch(callable $callable = null);
+        public function unwatch($name = null);
         
         /**
          * Checks if any callables have been added

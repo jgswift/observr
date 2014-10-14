@@ -9,7 +9,7 @@ namespace observr\Subject\Emitter {
          * @param callable $observer
          */
         public function attach(callable $observer) {
-            Observer::listener($this,'on')->watch($observer);
+            Observer::listener($this,'on')->watch('on',$observer);
         }
         
         /**
@@ -18,7 +18,7 @@ namespace observr\Subject\Emitter {
          * @param callable $observer
          */
         public function detach(callable $observer = null) {
-            Observer::listener($this,'on')->unwatch($observer);
+            Observer::listener($this,'on')->unwatch('on',$observer);
         }
     }
 }

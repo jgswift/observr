@@ -261,5 +261,42 @@ namespace observr\Tests {
             
             $this->assertEquals($match,$results);
         }
+        
+        public function testEventNamespacing() {
+            $user = new Mock\User;
+            
+            $c = 0;
+            
+            $user->attach('click',function($sender,$e)use(&$c) {
+                $c++;
+            });
+            
+            $user->attach('click.myNamespace',function($sender,$e)use(&$c) {
+                $c++;
+            });
+            
+            $user->setState('click');
+            
+            $this->assertEquals(2,$c);
+        }
+        
+        public function testEventNamespacedUnbind() {
+            $user = new Mock\User;
+            
+            $c = 0;
+            $user->attach('click',function($sender,$e)use(&$c) {
+                $c++;
+            });
+            
+            $user->attach('click.myNamespace',function($sender,$e)use(&$c) {
+                $c++;
+            });
+            
+            $user->detach('click.myNamespace');
+            
+            $user->setState('click');
+            
+            $this->assertEquals(1,$c);
+        }
     }
 }

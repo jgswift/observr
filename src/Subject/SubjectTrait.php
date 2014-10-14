@@ -9,16 +9,15 @@ namespace observr\Subject {
          * @param callable $observer
          */
         public function attach($name, callable $observer) {
-            Observer::listener($this,$name)->watch($observer);
+            Observer::listener($this,$name)->watch($name, $observer);
         }
         
         /**
          * Detach observer from subject
          * @param string $name
-         * @param callable $observer
          */
-        public function detach($name, callable $observer = null) {
-            Observer::listener($this,$name)->unwatch($observer);
+        public function detach($name) {
+            Observer::listener($this,$name)->unwatch($name);
         }
     }
 }

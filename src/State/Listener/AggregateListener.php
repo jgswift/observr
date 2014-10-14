@@ -42,19 +42,19 @@ namespace observr\State\Listener {
          * passes watch to all listeners
          * @param callable $callable
          */
-        public function watch(callable $callable) {
+        public function watch($name, callable $callable) {
             foreach($this as $listener) {
-                $listener->watch($callable);
+                $listener->watch($name, $callable);
             }
         }
         
         /**
          * passes unwatch to all listeners
-         * @param callable $callable
+         * @param string|callable $observer
          */
-        public function unwatch(callable $callable = null) {
+        public function unwatch($name = null) {
             foreach($this as $listener) {
-                $listener->unwatch($callable);
+                $listener->unwatch($name);
             }
         }
         

@@ -13,6 +13,6 @@ namespace observr\Subject {
          * @param string $name
          * @param string $observer
          */
-        public function detach($name, callable $observer = null);
+        public function detach($name);
     }
 }

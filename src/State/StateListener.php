@@ -40,23 +40,35 @@ namespace observr\State {
         
         /**
          * Add observer callable
+         * @param string $name
          * @param callable $callable
          */
-        public function watch(callable $callable) {
-            $this->observers[] = $callable;
+        public function watch($name, callable $callable) {
+            if(is_array($name)) {
+                $k = array_search($this->parent->getName(),$name);
+                if($k !== false) {
+                    $name = $name[$k];
+                }
+            } else {
+                $name = (string)$name;
+            }
+            
+            if(!isset($this->observers[$name])) {
+                $this->observers[$name] = [];
+            }
+            $this->observers[$name][] = $callable;
         }
         
         /**
          * Remove observer callbale
-         * @param callable $callable
+         * @param string $name
          */
-        public function unwatch(callable $callable = null) {
-            if(is_null($callable)) {
+        public function unwatch($name = null) {
+            if(is_null($name)) {
                 $this->observers = [];
-            } else {
-                $key = array_search($callable,$this->observers);
-                if($key) {
-                    unset($this->observers[$key]);
+            } elseif(is_string($name)) {
+                if(array_key_exists($name,$this->observers)) {
+                    unset($this->observers[$name]);
                 }
             }
         }
@@ -137,7 +149,9 @@ namespace observr\State {
                 $observers = $this->getObservers();
                 unset($this->observers); // prevent recursion
                 foreach($observers as $obs) {
-                    $results[] = $this->trigger($event,$obs);
+                    foreach($obs as $o) {
+                        $results[] = $this->trigger($event,$o);
+                    }
                 }
                 $this->observers = $observers;
             } else {
