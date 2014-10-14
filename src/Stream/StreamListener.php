@@ -9,7 +9,7 @@ namespace observr\Stream {
     class StreamListener extends StateListener implements NotifierAwareInterface {
         /**
          * Locally store stream notifier
-         * @var \observr\Stream\StreamNotifier 
+         * @var \observr\State\Notifier\NotifierInterface
          */
         private $notifier;
         
@@ -25,7 +25,7 @@ namespace observr\Stream {
         
         /**
          * Retrieve notifier
-         * @return \observr\Stream\StreamNotifier
+         * @return \observr\State\Notifier\NotifierInterface
          */
         public function getNotifier() {
             return $this->notifier;

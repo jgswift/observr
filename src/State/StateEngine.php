@@ -6,7 +6,7 @@ namespace observr\State {
     abstract class StateEngine implements NotifierAwareInterface {       
         /**
          * Locally store stream notifier for statestream wrappers
-         * @var \observr\Stream\StreamNotifier
+         * @var \observr\State\Notifier\NotifierInterface
          */
         protected $notifier;
         
@@ -22,7 +22,7 @@ namespace observr\State {
          * @return \observr\State\Notifier\NotifierInterface
          */
         public function getNotifier() {
-            return $this->notifier();
+            return $this->notifier;
         }
         
         /**

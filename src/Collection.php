@@ -1,10 +1,10 @@
 <?php
 namespace observr {
     use observr\Subject\SubjectAccessTrait as SubjectAccessTrait;
-    use observr\Subject\SubjectInterface as SubjectInterface;
+    use ArrayAccess;
     use observr\Subject\FixtureTrait as FixtureTrait;
     
-    class Collection implements \ArrayAccess, SubjectInterface {
+    class Collection implements ArrayAccess, SubjectInterface {
         use SubjectAccessTrait, FixtureTrait;
         
         /**

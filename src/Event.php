@@ -2,7 +2,6 @@
 namespace observr {
     use observr\Event\EventInterface as EventInterface;
     use observr\Event\EventAwareInterface as EventAwareInterface;
-    use observr\Subject\SubjectInterface as SubjectInterface;
     use observr\Event\EventTrait as EventTrait;
     use observr\Event\EventAwareTrait as EventAwareTrait;
     use observr\Subject\SubjectTrait as SubjectTrait;
