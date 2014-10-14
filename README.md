@@ -110,7 +110,7 @@ interface EventAwareInterface {
 }
 ```
 
-### Event Namespacing
+#### Event Namespacing
 
 In order to handle events differently depending on package behavior it is possible to ```attach```/```detach``` with namespaces.
 
@@ -143,58 +143,52 @@ $user->setState('login'); // echo 'default login'
 * ```CANCEL``` is notifier when any observer invokes cancellation
 
 ```php
-class Foo implements SubjectInterface
-{
-    use observr\Subject;
-}
+$user = new User;
+$event = new observr\Event($user);
 
-$foo = new Foo;
-$foo->attach("bar",function($sender,$e) {
-    // success with no cancellation or errors
+$user->attach("login",function($sender,$e) {
+    // success with no cancellation or errors, default behavior
 });
-
-$foo->attach("baz",function($sender,$e) {
-    $e->cancel(); // cancels the event
-});
-
-$foo->attach("fizz",function($sender,$e) {
-    throw new \Exception; // causes fault
-});
-
-$event = new observr\Event($foo);
 
 $event->attach(observr\Event::COMPLETE,function() {
     echo 'COMPLETE';
-});
-
-$event->attach(observr\Event::FAILURE,function() {
-    echo 'FAILURE'
-});
-
-$event->attach(observr\Event::CANCELED,function() {
-    echo 'CANCELED';
 });
 
 $event->attach(observr\Event::SUCCESS,function() {
     echo 'SUCCESS';
 });
 
-$foo->setState("bar",$event); // everything worked!
+$user->setState("login",$event); // everything worked!
 // invokes ...
 // COMPLETE
 // SUCCESS
 
+$user->attach("login",function($sender,$e) {
+    $e->cancel(); // cancels the event
+});
 
-$foo->setState("baz",$event); // manual cancellation
+$event->attach(observr\Event::CANCELED,function() {
+    echo 'CANCELED';
+});
+
+$user->setState("login",$event); // manual cancellation
 // invokes ...
 // COMPLETE
 // CANCEL
 
-$foo->setState("fizz",$event); // throws exception
+$user->attach("login",function($sender,$e) {
+    throw new \Exception; // causes fault
+});
+
+$event->attach(observr\Event::FAILURE,function() {
+    echo 'FAILURE'
+});
+
+$user->setState("login",$event); // throws exception
 // invokes ...
 // FAILURE
-
 ```
+
 ### Emitter
 
 Emitter is a Subject where events are exposed into individual objects
@@ -202,7 +196,7 @@ Emitter is a Subject where events are exposed into individual objects
 #### Basic Emitter
 
 ```php
-class Button implements SubjectInterface {
+class Button implements observr\SubjectInterface {
     use observr\Subject;
 }
 
