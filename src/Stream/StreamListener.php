@@ -3,29 +3,28 @@ namespace observr\Stream {
     use observr\State\StateObserver as StateObserver;
     use observr\State\StateListener as StateListener;
     use observr\State\Notifier\NotifierAwareInterface as NotifierAwareInterface;
-    use observr\State\Notifier\NotifierInterface as NotifierInterface;
     use observr\Event\EventAwareInterface as EventAwareInterface;
     
     class StreamListener extends StateListener implements NotifierAwareInterface {
         /**
          * Locally store stream notifier
-         * @var \observr\State\Notifier\NotifierInterface
+         * @var \observr\Stream\StreamNotifier
          */
         private $notifier;
         
         /**
          * Stream listener constructor
-         * @param \observr\State\Notifier\NotifierInterface $notifier
+         * @param \observr\Stream\StreamNotifier $notifier
          * @param \observr\State\StateObserver $parent
          */
-        function __construct(NotifierInterface $notifier, StateObserver $parent) {
+        function __construct(StreamNotifier $notifier, StateObserver $parent) {
             parent::__construct($parent);
             $this->notifier = $notifier;
         }
         
         /**
          * Retrieve notifier
-         * @return \observr\State\Notifier\NotifierInterface
+         * @return \observr\Stream\StreamNotifier
          */
         public function getNotifier() {
             return $this->notifier;
