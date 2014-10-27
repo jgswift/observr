@@ -167,7 +167,7 @@ $user->attach("login",function($sender,$e) {
     $e->cancel(); // cancels the event
 });
 
-$event->attach(observr\Event::CANCELED,function() {
+$event->attach(observr\Event::CANCEL,function() {
     echo 'CANCELED';
 });
 
