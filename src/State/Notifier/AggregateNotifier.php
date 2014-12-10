@@ -1,6 +1,58 @@
 <?php
 namespace observr\State\Notifier {
-    class AggregateNotifier extends \ArrayObject implements NotifierInterface {
+    class AggregateNotifier implements \ArrayAccess, \IteratorAggregate, NotifierInterface {
+        /**
+         * Locally stores listener/notifiers
+         * @var array 
+         */
+        private $notifiers = [];
+        
+        /**
+         * Default constructor for AggregateListener
+         * @param array $notifiers
+         */
+        public function __construct(array $notifiers = []) {
+            $this->notifiers = $notifiers;
+        }
+        
+        /**
+         * Check if listener is at index
+         * @param mixed $offset
+         * @return boolean
+         */
+        public function offsetExists($offset) {
+            return isset($this->notifiers[$offset]);
+        }
+
+        /**
+         * Retrieve listener from index
+         * @param mixed $offset
+         * @return mixed
+         */
+        public function offsetGet($offset) {
+            if(isset($this->notifiers[$offset])) {
+                return $this->notifiers[$offset];
+            }
+        }
+
+        /**
+         * Remove listener from index
+         * @param mixed $offset
+         */
+        public function offsetUnset($offset) {
+            if(isset($this->notifiers[$offset])) {
+                unset($this->notifiers[$offset]);
+            }
+        }
+        
+        /**
+         * Allows native iteration over AggregateListener
+         * @return \ArrayIterator
+         */
+        public function getIterator() {
+            return new \ArrayIterator($this->notifiers);
+        }
+        
         /**
          * Ensure new value is Notifier
          * @param mixed $index
